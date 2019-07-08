@@ -1,7 +1,6 @@
 package implicit
 
 import implicit.decorator.AddConstructorDecorator
-import implicit.decorator.AddExplicitDecorator
 import implicit.decorator.AddFieldDecorator
 import implicit.decorator.AddGetterSetterDecorator
 import net.bytebuddy.ByteBuddy
@@ -24,7 +23,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
     @JvmOverloads
     @Suppress("UNCHECKED_CAST")
-    fun <T> create(intf: Class<T>, interceptor:ImplicitInterceptor = ImplicitInterceptor()): Class<out T> {
+    fun <T> create(intf: Class<T>, interceptor: ImplicitInterceptor = ImplicitInterceptor()): Class<out T> {
         if (!intf.isInterface)
             throw IllegalArgumentException("argument must be an interface")
 
@@ -34,9 +33,8 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         val addField = AddFieldDecorator<T>(intf)::apply
         val addGetterSetter = AddGetterSetterDecorator<T>(intf)::apply
         val addConstructor = AddConstructorDecorator<T>(intf, interceptor)::apply
-        val addExplicit = AddExplicitDecorator<T>(intf)::apply
 
-        val unloaded = addExplicit(addGetterSetter(addField(addConstructor(init(intf))))).make()
+        val unloaded = addGetterSetter(addField(addConstructor(init(intf)))).make()
         interceptor.onLoading(unloaded)
 
         val loaded = unloaded.load(Implicit::class.java.classLoader, INJECTION)
@@ -61,7 +59,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
     @JvmOverloads
     @Suppress("UNCHECKED_CAST")
-    fun <T> getSupplier(type: Class<T>, cache:Boolean = false): Supplier<out T> {
+    fun <T> getSupplier(type: Class<T>, cache: Boolean = false): Supplier<out T> {
         if (cache && supplierRegistry.containsKey(type.name))
             return supplierRegistry[type.name] as Supplier<out T>
 
@@ -79,7 +77,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
     @JvmOverloads
     @Suppress("UNCHECKED_CAST")
-    fun <T> instantiate(type: Class<T>, cache:Boolean = false): T {
+    fun <T> instantiate(type: Class<T>, cache: Boolean = false): T {
         return getSupplier(type, cache).get()
     }
 
