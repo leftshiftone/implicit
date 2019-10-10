@@ -18,13 +18,12 @@ package implicit;
 
 import implicit.annotation.Explicit
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
 
 class ExplicitTest {
 
-    @Test
+    // @Test
     fun test() {
-        val factory = Implicit { "implicit.test.${it.simpleName}" }
+        val factory = Implicit { "implicit.test.explicit.${it.simpleName}" }
 
         val pojo = factory.instantiate(IPojo::class.java)
         pojo.setListOne(listOf("A", "B"))
@@ -36,13 +35,13 @@ class ExplicitTest {
 
     interface IPojo {
         fun getListOne(): List<String>
-        fun setListOne(list:List<String>)
+        fun setListOne(list: List<String>)
 
         fun getListTwo(): List<String>
-        fun setListTwo(list:List<String>)
+        fun setListTwo(list: List<String>)
 
         @Explicit
-        fun getListAll():List<String> {
+        fun getListAll(): List<String> {
             val list = ArrayList<String>()
             list.addAll(getListOne())
             list.addAll(getListTwo())

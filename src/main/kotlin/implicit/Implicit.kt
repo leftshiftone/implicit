@@ -27,6 +27,8 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         if (!intf.isInterface)
             throw IllegalArgumentException("argument must be an interface")
 
+        println(intf.name)
+
         if (intfTypeRegistry.containsKey(intf.name))
             return Class.forName(intfTypeRegistry.get(intf.name)) as Class<out T>
 

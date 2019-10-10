@@ -1,6 +1,7 @@
 package implicit.decorator
 
 import implicit.annotation.Explicit
+import implicit.annotation.Implicit
 import net.bytebuddy.description.modifier.Visibility
 import net.bytebuddy.dynamic.DynamicType
 import java.lang.reflect.Method
@@ -31,21 +32,25 @@ class AddFieldDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Bu
                 registry.add(name)
                 reference.set(reference.get()
                         .defineField(getFieldName(method), method.returnType, Visibility.PRIVATE)
-                        .annotateField(*method.annotations))
+                        .annotateField(method.annotations.filter(this::isExplicitAnnotation)))
             }
             if (method.name.startsWith("set") && !registry.contains(name)) {
                 registry.add(name)
                 reference.set(reference.get()
                         .defineField(getFieldName(method), method.parameterTypes[0], Visibility.PRIVATE)
-                        .annotateField(*method.annotations))
+                        .annotateField(method.annotations.filter(this::isExplicitAnnotation)))
             }
             if (method.name.startsWith("is") && !registry.contains(getFieldName(method, 2))) {
                 registry.add(getFieldName(method, 2))
                 reference.set(reference.get()
                         .defineField(getFieldName(method), method.returnType, Visibility.PRIVATE)
-                        .annotateField(*method.annotations))
+                        .annotateField(method.annotations.filter(this::isExplicitAnnotation)))
             }
         }
+    }
+
+    private fun isExplicitAnnotation(annotation:Annotation):Boolean {
+        return annotation.annotationClass.annotations.none { it is Implicit }
     }
 
 }

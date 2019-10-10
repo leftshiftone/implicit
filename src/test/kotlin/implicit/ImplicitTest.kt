@@ -24,7 +24,7 @@ class ImplicitTest {
 
     @Test
     fun test() {
-        val factory = Implicit { "implicit.test.${it.simpleName}" }
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
         val supplier = factory.getSupplier(IPojo::class.java)
 
         val pojo = supplier.get()
@@ -42,7 +42,7 @@ class ImplicitTest {
 
     @Test
     fun `create one million instances`() {
-        val factory = Implicit { "implicit.test.${it.simpleName}" }
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
         val supplier = factory.getSupplier(factory.create(IPojo::class.java))
 
         (1..1000000).forEach {
