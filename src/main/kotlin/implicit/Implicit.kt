@@ -12,6 +12,7 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Default.INJECTION
 import net.bytebuddy.implementation.MethodDelegation
 import net.bytebuddy.matcher.ElementMatchers.isDeclaredBy
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Function
 import java.util.function.Supplier
 
 class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
@@ -26,8 +27,6 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     fun <T> create(intf: Class<T>, interceptor: ImplicitInterceptor = ImplicitInterceptor()): Class<out T> {
         if (!intf.isInterface)
             throw IllegalArgumentException("argument must be an interface")
-
-        println(intf.name)
 
         if (intfTypeRegistry.containsKey(intf.name))
             return Class.forName(intfTypeRegistry.get(intf.name)) as Class<out T>
@@ -77,10 +76,34 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         return supplier
     }
 
+    // TODO: performance improvement
+    @JvmOverloads
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getFunction(type: Class<T>, cache: Boolean = false): Function<Map<*, *>, out T> {
+        return Function { map ->
+            val instance = instantiate(type, cache)
+            type.declaredMethods
+                    .filter { it.name.startsWith("set") }
+                    .forEach {
+                        val field = it.name.substring(3).decapitalize()
+                        if (map.containsKey(field)) {
+                            it.invoke(instance, map[field])
+                        }
+                    }
+            return@Function instance
+        }
+    }
+
     @JvmOverloads
     @Suppress("UNCHECKED_CAST")
     fun <T> instantiate(type: Class<T>, cache: Boolean = false): T {
         return getSupplier(type, cache).get()
+    }
+
+    @JvmOverloads
+    @Suppress("UNCHECKED_CAST")
+    fun <T> instantiate(type: Class<T>, map: Map<*, *>, cache: Boolean = false): T {
+        return getFunction(type, cache).apply(map)
     }
 
     private fun <T> init(intf: Class<T>): DynamicType.Builder<T> {

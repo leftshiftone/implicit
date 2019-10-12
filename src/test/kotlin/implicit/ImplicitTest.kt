@@ -33,11 +33,20 @@ class ImplicitTest {
 
         Assertions.assertNotNull(pojo.getPartitionKey())
         Assertions.assertNotNull(pojo.getSortingKey())
-
         Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
-        val field = pojo::class.java.getDeclaredField("partitionKey")//.map { it.annotationClass.simpleName }.contains("Entity"))
-        field.isAccessible = true
-        println(field)
+    }
+
+    @Test
+    fun `map initialization`() {
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
+        val function = factory.getFunction(IPojo::class.java)
+
+        val pojo = function.apply(mapOf("partitionKey" to UUID.randomUUID().toString(),
+                "sortingKey" to UUID.randomUUID().toString()))
+
+        Assertions.assertNotNull(pojo.getPartitionKey())
+        Assertions.assertNotNull(pojo.getSortingKey())
+        Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
     }
 
     @Test

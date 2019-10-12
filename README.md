@@ -21,11 +21,18 @@ interface IPojo {
 
 
 val factory = Implicit { "custom.package.${it.simpleName}" }
-val supplier = factory.getSupplier(IPojo::class.java)
+val pojo = factory.instantiate(IPojo::class.java)
 
-val pojo = supplier.get()
 pojo.setPartitionKey(UUID.randomUUID().toString())
 pojo.setSortingKey(UUID.randomUUID().toString())
+````
+
+## Map initialization
+Implicit also supports a pojo initialization by using a map argument.
+
+````
+val factory = Implicit { "custom.package.${it.simpleName}" }
+val pojo = factory.instantiate(IPojo::class.java, mapOf("partitionKey" to "A", "sortingKey" to "B")
 ````
 
 ## Validation
