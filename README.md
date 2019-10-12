@@ -50,6 +50,7 @@ Implicit has the following built-in annotations:
 | NotNull        | Target must not be null                                         |
 | NotBlank       | Target must not be blank                                        |
 | ContentNotNull | Target content (map/collection entries) must not be bzkk        |
+| Between        | Target value must be between the min and max value              |
 
 ````
 interface IPojo {
