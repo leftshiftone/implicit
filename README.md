@@ -49,7 +49,7 @@ Implicit has the following built-in annotations:
 | MinLength      | Target value length must be greater equals the configured value |
 | NotNull        | Target must not be null                                         |
 | NotBlank       | Target must not be blank                                        |
-| ContentNotNull | Target content (map/collection entries) must not be blank       |
+| ContentNotNull | Target content (map/collection entries) must not be bzkk        |
 
 ````
 interface IPojo {
