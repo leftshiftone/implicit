@@ -18,10 +18,13 @@ package implicit;
 
 import implicit.annotation.Explicit
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
 class ExplicitTest {
 
-    // @Test
+    @Disabled("This test fails") //todo: fix test
+    @Test
     fun test() {
         val factory = Implicit { "implicit.test.explicit.${it.simpleName}" }
 

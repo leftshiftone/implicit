@@ -1,27 +1,17 @@
-/*
- * Copyright (c) 2016-2019, Leftshift One
- * __________________
- * [2019] Leftshift One
- * All Rights Reserved.
- * NOTICE:  All information contained herein is, and remains
- * the property of Leftshift One and its suppliers,
- * if any.  The intellectual and technical concepts contained
- * herein are proprietary to Leftshift One
- * and its suppliers and may be covered by Patents,
- * patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Leftshift One.
- */
-
 buildscript {
+    ext {
+        versionKotlin = "1.3.41"
+    }
     repositories {
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.71"
-        classpath "org.jetbrains.kotlin:kotlin-allopen:1.2.71"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versionKotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${versionKotlin}"
+        classpath "com.netflix.nebula:nebula-release-plugin:8.0.3"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
 
@@ -31,31 +21,104 @@ repositories {
 }
 
 apply plugin: "kotlin"
-apply plugin: "java"
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+apply plugin: "nebula.nebula-release"
+apply plugin: "org.jetbrains.dokka"
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.41"
-    compile "org.jetbrains.kotlin:kotlin-reflect:1.3.41"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+    compile "net.bytebuddy:byte-buddy:1.9.12"
 
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.12'
-
-    testCompile "org.junit.jupiter:junit-jupiter-engine:5.4.2"
+    testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
+    testRuntime "org.slf4j:slf4j-simple:1.7.26"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+release {
+    defaultVersionStrategy = nebula.plugin.release.NetflixOssStrategies.SNAPSHOT
+}
+
+test {
+    useJUnitPlatform()
+}
+tasks.withType(Test) { testTask ->
+    testTask.beforeTest { descriptor ->
+        logger.lifecycle(descriptor.toString())
+    }
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "javadoc"
+    outputDirectory = "${buildDir}/dokkaJavadoc"
+}
+task sourceJar(type: Jar) {
     from sourceSets.main.allSource
+    classifier "sources"
+}
+task javadocJar(type: Jar) {
+    from dokkaJavadoc
+    classifier "javadoc"
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.name
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+            pom.withXml {
+                Node root = asNode()
+                root.appendNode("name", "Implicit")
+                root.appendNode("description", "Implicit is a runtime code generation library which can be used to generate POJO classes out of interface definitions.")
+                root.appendNode("url", "https://github.com/leftshiftone/implicit")
+
+                Node licenses = root.appendNode("licenses")
+                Node license = licenses.appendNode("license")
+                license.appendNode("name", "The Apache License, Version 2.0")
+                license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
+
+                Node developers = root.appendNode("developers")
+                Node developer = developers.appendNode("developer")
+                developer.appendNode("id", "leftshiftone")
+                developer.appendNode("name", "Leftshift One")
+                developer.appendNode("email", "contact@leftshift.one")
+                developer.appendNode("organization", "Leftshift One Software GmbH")
+                developer.appendNode("organizationUrl", "https://www.leftshift.one")
+
+                Node scm = root.appendNode("scm")
+                scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/implicit.git")
+                scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/implicit.git")
+                scm.appendNode("url", "https://github.com/leftshiftone/implicit")
+            }
+        }
+    }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+bintray {
+    logger.info "Bintray deploy with user [${System.getenv('BINTRAY_USER')}] while working on ${project.name}"
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publish = true
+    pkg {
+        repo = "implicit"
+        name = "${project.group}.${project.name}"
+        userOrg = "leftshiftone"
+        licenses = ["Apache-2.0"]
+        vcsUrl = "https://github.com/leftshiftone/implicit.git"
+        publications = ["mavenJava"]
+    }
 }
