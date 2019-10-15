@@ -63,3 +63,17 @@ interface IPojo {
     fun setSortingKey(@NotBlank str: String)
 }
 ````
+
+## Development
+
+### Release
+Releases are triggered locally. Just a tag will be pushed and CI pipelines take care of the rest.
+
+#### Major
+Run `./gradlew final -x bintrayUpload -Prelease.scope=major` locally.
+
+#### Minor
+Run `./gradlew final -x bintrayUpload -Prelease.scope=minor` locally.
+
+#### Patch
+Run `./gradlew final -x bintrayUpload -Prelease.scope=patch` locally.
