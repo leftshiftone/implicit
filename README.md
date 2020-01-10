@@ -59,6 +59,8 @@ Implicit has the following built-in annotations:
 | ContentNotNull | Target content (map/collection entries) must not be bzkk        |
 | Between        | Target value must be between the min and max value              |
 | Regex          | Target value must match the regex pattern                       |
+| Email          | Target value must match the email regex pattern                 |
+| URL            | Target value must match the url regex pattern                   |
 
 ````
 interface IPojo {
