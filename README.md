@@ -52,6 +52,8 @@ Implicit has the following built-in annotations:
 | LowerEquals    | Target value must be lower equals the configured value          |
 | MaxLength      | Target value length must be lower equals the configured value   |
 | MinLength      | Target value length must be greater equals the configured value |
+| Min            | Target value must be greater equals the configured value        |
+| Max            | Target value must be greater equals the configured value        |
 | NotNull        | Target must not be null                                         |
 | NotBlank       | Target must not be blank                                        |
 | ContentNotNull | Target content (map/collection entries) must not be bzkk        |
