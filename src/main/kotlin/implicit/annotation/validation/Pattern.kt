@@ -8,4 +8,4 @@ import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
 @Retention(RUNTIME)
 @Target(VALUE_PARAMETER, ANNOTATION_CLASS)
 @Implicit
-annotation class Regex(val pattern:String, val message:String = "")
+annotation class Pattern(val pattern:String, val message:String = "")

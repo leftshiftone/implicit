@@ -1,10 +1,10 @@
 package implicit.validation.validator
 
-import implicit.annotation.validation.Regex
+import implicit.annotation.validation.Pattern
 import implicit.exception.ImplicitValidationException
 import java.lang.reflect.Method
 
-internal class RegexValidator(val annotation: Regex) : AbstractValidator() {
+internal class RegexValidator(val annotation: Pattern) : AbstractValidator() {
 
     override fun validate(values: List<*>, method: Method) {
         for (value in values) {

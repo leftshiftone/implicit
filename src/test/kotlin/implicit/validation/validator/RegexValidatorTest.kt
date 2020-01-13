@@ -17,7 +17,7 @@
 package implicit.validation.validator;
 
 import implicit.Implicit
-import implicit.annotation.validation.Regex
+import implicit.annotation.validation.Pattern
 import implicit.exception.ImplicitException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -49,7 +49,7 @@ class RegexValidatorTest {
     }
 
     interface IPojo {
-        fun setEmail(@Regex("[a-z]*@[a-z]*\\.[a-z]*") str: String?)
+        fun setEmail(@Pattern("[a-z]*@[a-z]*\\.[a-z]*") str: String?)
     }
 
 }

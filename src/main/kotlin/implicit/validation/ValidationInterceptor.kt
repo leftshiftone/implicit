@@ -42,7 +42,7 @@ object ValidationInterceptor {
             is MinLength -> return MinLengthValidator(annotation)
             is ContentNotNull -> return ContentNullValidator(annotation)
             is Between -> return BetweenValidator(annotation)
-            is Regex -> return RegexValidator(annotation)
+            is Pattern -> return RegexValidator(annotation)
             is Min -> return MinValidator(annotation)
             is Max -> return MaxValidator(annotation)
             else -> throw ImplicitException("unknown annotation $annotation")
