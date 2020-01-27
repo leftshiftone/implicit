@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
 
 class NotNullValidatorTest {
+
     @Test
     fun test() {
         val factory = Implicit { "${this.javaClass.name.toLowerCase()}.${it.simpleName}" }

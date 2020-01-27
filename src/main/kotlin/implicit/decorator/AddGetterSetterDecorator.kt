@@ -47,11 +47,8 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
                 .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
                         .and(annotationMatcher)
                         .and(nameMatcher))
-                .intercept(MethodDelegation.to(ValidationInterceptor))
-                // .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
-                //         .and(annotationMatcher)
-                //         .and(nameMatcher))
-                // .intercept(MethodDelegation.to(Validation2Interceptor))
+                 .intercept(MethodDelegation.to(ValidationInterceptor)
+                         .andThen(FieldAccessor.ofBeanProperty()))
     }
 
 }
