@@ -14,15 +14,16 @@
  * from Leftshift One.
  */
 
-package implicit;
+package implicit.validation.validator;
 
-import implicit.annotation.validation.NotNull
+import implicit.Implicit
+import implicit.annotation.validation.Pattern
 import implicit.exception.ImplicitException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
 
-class ValidatorTest {
+class RegexValidatorTest {
 
     @Test
     fun test() {
@@ -34,12 +35,12 @@ class ValidatorTest {
         val pojo = supplier.get()
 
         try {
-            pojo.setPartitionKey(null)
+            pojo.setEmail(null)
         } catch (ex:ImplicitException) {
             counter.incrementAndGet()
         }
         try {
-            pojo.setSortingKey(null)
+            pojo.setEmail("abcd")
         } catch (ex:ImplicitException) {
             counter.incrementAndGet()
         }
@@ -48,8 +49,7 @@ class ValidatorTest {
     }
 
     interface IPojo {
-        fun setPartitionKey(@NotNull str: String?)
-        fun setSortingKey(@NotNull str: String?)
+        fun setEmail(@Pattern("[a-z]*@[a-z]*\\.[a-z]*") str: String?)
     }
 
 }

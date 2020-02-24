@@ -52,10 +52,16 @@ Implicit has the following built-in annotations:
 | LowerEquals    | Target value must be lower equals the configured value          |
 | MaxLength      | Target value length must be lower equals the configured value   |
 | MinLength      | Target value length must be greater equals the configured value |
+| Min            | Target value must be greater equals the configured value        |
+| Max            | Target value must be greater equals the configured value        |
 | NotNull        | Target must not be null                                         |
 | NotBlank       | Target must not be blank                                        |
-| ContentNotNull | Target content (map/collection entries) must not be bzkk        |
+| ContentNotNull | Target content (map/collection entries) must not be null        |
 | Between        | Target value must be between the min and max value              |
+| Pattern        | Target value must match the regex pattern                       |
+| Email          | Target value must match the email regex pattern                 |
+| URL            | Target value must match the url regex pattern                   |
+| Docker         | Target value must match the docker image regex pattern          |
 
 ````
 interface IPojo {

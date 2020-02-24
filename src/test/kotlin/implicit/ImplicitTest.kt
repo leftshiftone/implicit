@@ -31,6 +31,8 @@ class ImplicitTest {
         pojo.setPartitionKey(UUID.randomUUID().toString())
         pojo.setSortingKey(UUID.randomUUID().toString())
 
+        pojo::class.java.declaredFields.forEach(System.out::println)
+
         Assertions.assertNotNull(pojo.getPartitionKey())
         Assertions.assertNotNull(pojo.getSortingKey())
         Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
