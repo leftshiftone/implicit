@@ -8,4 +8,4 @@ import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
 @Retention(RUNTIME)
 @Target(VALUE_PARAMETER)
 @Implicit(VALIDATOR)
-annotation class NotNull(val message:String = "")
+annotation class ContentNotBlank(val message:String = "")

@@ -20,20 +20,24 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
      * {@inheritDoc}
      */
     override fun apply(builder: DynamicType.Builder<T>): DynamicType.Builder<T> {
-        val typeMatcher = object:ElementMatcher<TypeDescription> {
+        val typeMatcher = object : ElementMatcher<TypeDescription> {
             override fun matches(target: TypeDescription): Boolean {
                 return target.isInHierarchyWith(intf) && target.isInterface
             }
         }
-        val nameMatcher = object:ElementMatcher<MethodDescription> {
+        val nameMatcher = object : ElementMatcher<MethodDescription> {
             override fun matches(target: MethodDescription): Boolean {
                 return target.name.startsWith("get") || target.name.startsWith("set")
             }
         }
-        val annotationMatcher = object:ElementMatcher<MethodDescription> {
+        val annotationMatcher = object : ElementMatcher<MethodDescription> {
             override fun matches(target: MethodDescription): Boolean {
-                val expr1 = target.declaredAnnotations.any { it.annotationType.declaredAnnotations.isAnnotationPresent(Implicit::class.java) }
-                val expr2 = target.parameters.any {it.declaredAnnotations.any { it.annotationType.declaredAnnotations.isAnnotationPresent(Implicit::class.java) }}
+                val expr1 = target.declaredAnnotations.any {
+                    it.annotationType.declaredAnnotations.any { e ->
+                        e.toString() == "@implicit.annotation.Implicit(value=VALIDATOR)"
+                    }
+                }
+                val expr2 = target.parameters.any { it.declaredAnnotations.any { it.annotationType.declaredAnnotations.isAnnotationPresent(Implicit::class.java) } }
                 return expr1 || expr2
             }
         }
@@ -47,8 +51,8 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
                 .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
                         .and(annotationMatcher)
                         .and(nameMatcher))
-                 .intercept(MethodDelegation.to(ValidationInterceptor)
-                         .andThen(FieldAccessor.ofBeanProperty()))
+                .intercept(MethodDelegation.to(ValidationInterceptor)
+                        .andThen(FieldAccessor.ofBeanProperty()))
     }
 
 }

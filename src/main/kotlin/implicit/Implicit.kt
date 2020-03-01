@@ -1,8 +1,6 @@
 package implicit
 
-import implicit.decorator.AddConstructorDecorator
-import implicit.decorator.AddFieldDecorator
-import implicit.decorator.AddGetterSetterDecorator
+import implicit.decorator.*
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.NamingStrategy
 import net.bytebuddy.description.method.MethodDescription
@@ -34,8 +32,10 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         val addField = AddFieldDecorator<T>(intf)::apply
         val addGetterSetter = AddGetterSetterDecorator<T>(intf)::apply
         val addConstructor = AddConstructorDecorator<T>(intf, interceptor)::apply
+        val addAlias = AliasDecorator<T>(intf)::apply
+        val addMixin = MixinDecorator<T>(intf)::apply
 
-        val unloaded = addGetterSetter(addField(addConstructor(init(intf)))).make()
+        val unloaded = addMixin(addAlias(addGetterSetter(addField(addConstructor(init(intf)))))).make()
         interceptor.onLoading(unloaded)
 
         val loaded = unloaded.load(Implicit::class.java.classLoader, INJECTION)
@@ -60,12 +60,13 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
     @JvmOverloads
     @Suppress("UNCHECKED_CAST")
-    fun <T> getSupplier(type: Class<T>, cache: Boolean = false): Supplier<out T> {
+    fun <T> getSupplier(type: Class<T>, cache: Boolean = false,
+                        interceptor: ImplicitInterceptor = ImplicitInterceptor()): Supplier<out T> {
         if (cache && supplierRegistry.containsKey(type.name))
             return supplierRegistry[type.name] as Supplier<out T>
 
         if (type.isInterface) {
-            val supplier = getSupplierType(create(type)).newInstance()
+            val supplier = getSupplierType(create(type, interceptor)).newInstance()
             if (cache)
                 supplierRegistry[type.name] = supplier
             return supplier

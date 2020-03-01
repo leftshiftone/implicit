@@ -1,10 +1,11 @@
 package implicit.annotation.validation
 
 import implicit.annotation.Implicit
+import implicit.annotation.Implicit.Type.VALIDATOR
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
 
 @Retention(RUNTIME)
 @Target(VALUE_PARAMETER)
-@Implicit
+@Implicit(VALIDATOR)
 annotation class Max(val size:Float, val message:String = "")

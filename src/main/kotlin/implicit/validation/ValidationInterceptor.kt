@@ -18,7 +18,7 @@ object ValidationInterceptor {
         annotations.addAll(method.parameterAnnotations.flatten().map(this::resolveAnnotations).flatten())
 
         annotations
-                .filter { it.annotationClass.annotations.any { e -> e is Implicit } }
+                .filter { it.annotationClass.annotations.any { e -> e is Implicit && e.value == Implicit.Type.VALIDATOR } }
                 .map(this::getValidator)
                 .forEach { it.validate(listOf(value), method) }
 
@@ -26,7 +26,7 @@ object ValidationInterceptor {
     }
 
     private fun resolveAnnotations(annotation: Annotation): List<Annotation> {
-        val composite = annotation.annotationClass.annotations.filter { it.annotationClass.annotations.any { e -> e is Implicit } }
+        val composite = annotation.annotationClass.annotations.filter { it.annotationClass.annotations.any { e -> e is Implicit && e.value == Implicit.Type.VALIDATOR } }
         return if (composite.isEmpty()) listOf(annotation) else composite
     }
 
@@ -41,6 +41,7 @@ object ValidationInterceptor {
             is MaxLength -> return MaxLengthValidator(annotation)
             is MinLength -> return MinLengthValidator(annotation)
             is ContentNotNull -> return ContentNullValidator(annotation)
+            is ContentNotBlank -> return ContentBlankValidator(annotation)
             is Between -> return BetweenValidator(annotation)
             is Pattern -> return RegexValidator(annotation)
             is Min -> return MinValidator(annotation)
