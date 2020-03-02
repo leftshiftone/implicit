@@ -35,6 +35,8 @@ dependencies {
 
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testRuntime "org.slf4j:slf4j-simple:1.7.26"
+
+    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
 }
 
 compileKotlin {
