@@ -10,4 +10,4 @@ import kotlin.reflect.KClass
 @Retention(RUNTIME)
 @Target(FUNCTION, ANNOTATION_CLASS)
 @Implicit(GENERATOR)
-annotation class Mixin(val clazz: KClass<*>)
+annotation class Mixin(val value: KClass<*>)

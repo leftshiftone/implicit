@@ -9,4 +9,4 @@ import kotlin.annotation.AnnotationTarget.FUNCTION
 @Retention(RUNTIME)
 @Target(FUNCTION, ANNOTATION_CLASS)
 @Implicit(GENERATOR)
-annotation class Alias(val name: String, val transient:Boolean = false)
+annotation class Alias(val value: String)

@@ -21,7 +21,7 @@ class AliasDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Build
         for (method in intf.declaredMethods) {
             val annotation = getAnnotation(method.declaredAnnotations)
             if (annotation != null) {
-                val modifier = Modifier.PUBLIC.or(Modifier.TRANSIENT)
+                val modifier = Modifier.PUBLIC
                 result = result.defineMethod("get" + annotation.capitalize(), String::class.java, modifier)
                         .intercept(FieldAccessor.ofField(method.name.substring(3).decapitalize()))
             }
@@ -32,10 +32,10 @@ class AliasDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Build
     private fun getAnnotation(annotations: Array<Annotation>): String? {
         return annotations.flatMap { annotation ->
             if (annotation is Alias) {
-                return@flatMap listOf(annotation.name)
+                return@flatMap listOf(annotation.value)
             }
             val result = annotation.annotationClass.annotations.find { it is Alias }
-            if (result == null) listOf() else listOf((result as Alias).name)
+            if (result == null) listOf() else listOf((result as Alias).value)
         }.firstOrNull()
     }
 

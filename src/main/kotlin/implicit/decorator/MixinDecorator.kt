@@ -28,10 +28,10 @@ class MixinDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Build
     private fun getAnnotation(annotations: Array<Annotation>): Class<*>? {
         return annotations.flatMap { annotation ->
             if (annotation is Mixin) {
-                return@flatMap listOf(annotation.clazz.java)
+                return@flatMap listOf(annotation.value.java)
             }
             val result = annotation.annotationClass.annotations.find { it is Mixin }
-            if (result == null) listOf() else listOf((result as Mixin).clazz.java)
+            if (result == null) listOf() else listOf((result as Mixin).value.java)
         }.firstOrNull()
     }
 

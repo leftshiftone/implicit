@@ -24,7 +24,7 @@ class MixinTest {
 
     @Retention(AnnotationRetention.RUNTIME)
     @Target(AnnotationTarget.FUNCTION)
-    @Alias(name = "partitionKey", transient = true)
+    @Alias(value = "partitionKey", isTransient = true)
     @Mixin(PartitionKeyAware::class)
     @implicit.annotation.Implicit(GENERATOR)
     annotation class PartitionKey
