@@ -22,7 +22,7 @@ class AliasTest {
 
     @Retention(AnnotationRetention.RUNTIME)
     @Target(AnnotationTarget.FUNCTION)
-    @Alias(value = "partitionKey", isTransient = true)
+    @Alias(value = "partitionKey")
     @implicit.annotation.Implicit(GENERATOR)
     annotation class PartitionKey
 
