@@ -2,6 +2,8 @@ package implicit.decorator
 
 import implicit.annotation.Explicit
 import implicit.annotation.Implicit
+import implicit.annotation.generator.Default
+import implicit.validation.DefaultValueInterceptor
 import implicit.validation.ValidationInterceptor
 import net.bytebuddy.description.ByteCodeElement
 import net.bytebuddy.description.method.MethodDescription
@@ -16,9 +18,6 @@ import java.util.function.Function
 
 class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Builder<T>, DynamicType.Builder<T>> {
 
-    /**
-     * {@inheritDoc}
-     */
     override fun apply(builder: DynamicType.Builder<T>): DynamicType.Builder<T> {
         val typeMatcher = object : ElementMatcher<TypeDescription> {
             override fun matches(target: TypeDescription): Boolean {
@@ -37,7 +36,11 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
                         e.toString() == "@implicit.annotation.Implicit(value=VALIDATOR)"
                     }
                 }
-                val expr2 = target.parameters.any { it.declaredAnnotations.any { it.annotationType.declaredAnnotations.isAnnotationPresent(Implicit::class.java) } }
+                val expr2 = target.parameters.any { x ->
+                    x.declaredAnnotations.any { y ->
+                        y.annotationType.declaredAnnotations.isAnnotationPresent(Implicit::class.java)
+                    }
+                }
                 return expr1 || expr2
             }
         }
@@ -46,13 +49,20 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
                 .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
                         .and(not<MethodDescription>(isDefaultMethod<MethodDescription>()))
                         .and(not<MethodDescription>(isAnnotatedWith(Explicit::class.java)))
+                        .and(not<MethodDescription>(isAnnotatedWith(Default::class.java)))
                         .and(nameMatcher))
                 .intercept(FieldAccessor.ofBeanProperty())
                 .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
                         .and(annotationMatcher)
+                        .and(not<MethodDescription>(isAnnotatedWith(Default::class.java)))
                         .and(nameMatcher))
                 .intercept(MethodDelegation.to(ValidationInterceptor)
                         .andThen(FieldAccessor.ofBeanProperty()))
+                .method(                        isDeclaredBy<ByteCodeElement>(typeMatcher)
+                        .and(nameMatcher)
+                        .and(isAnnotatedWith(Default::class.java))
+                )
+                .intercept(MethodDelegation.to(DefaultValueInterceptor))
     }
 
 }

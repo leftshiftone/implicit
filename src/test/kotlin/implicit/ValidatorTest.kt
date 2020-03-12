@@ -44,10 +44,24 @@ class ValidatorTest {
             counter.incrementAndGet()
         }
 
+        pojo.setPartitionKey("test")
+
         Assertions.assertEquals(counter.get(), 2)
     }
 
+    @Test
+    fun `valid data`() {
+        val factory = Implicit { "${this.javaClass.name.toLowerCase()}.${it.simpleName}" }
+        val supplier = factory.getSupplier(IPojo::class.java)
+
+        val pojo = supplier.get()
+
+        pojo.setPartitionKey("test")
+        Assertions.assertEquals("test", pojo.getPartitionKey())
+    }
+
     interface IPojo {
+        fun getPartitionKey():String?
         fun setPartitionKey(@NotNull str: String?)
         fun setSortingKey(@NotNull str: String?)
     }

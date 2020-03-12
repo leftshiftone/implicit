@@ -1,6 +1,7 @@
 package implicit.validation
 
 import implicit.annotation.Implicit
+import implicit.annotation.Implicit.Type.VALIDATOR
 import implicit.annotation.validation.*
 import implicit.exception.ImplicitException
 import implicit.validation.validator.*
@@ -18,7 +19,7 @@ object ValidationInterceptor {
         annotations.addAll(method.parameterAnnotations.flatten().map(this::resolveAnnotations).flatten())
 
         annotations
-                .filter { it.annotationClass.annotations.any { e -> e is Implicit && e.value == Implicit.Type.VALIDATOR } }
+                .filter { it.annotationClass.annotations.any { e -> e is Implicit && e.value == VALIDATOR } }
                 .map(this::getValidator)
                 .forEach { it.validate(listOf(value), method) }
 

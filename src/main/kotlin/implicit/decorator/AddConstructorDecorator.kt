@@ -4,6 +4,7 @@ import implicit.ImplicitInterceptor
 import implicit.annotation.Explicit
 import implicit.exception.ImplicitException
 import net.bytebuddy.dynamic.DynamicType
+import net.bytebuddy.dynamic.DynamicType.Builder
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ParameterDefinition.Simple.Annotatable
 import net.bytebuddy.implementation.FieldAccessor.ofField
 import net.bytebuddy.implementation.Implementation
@@ -17,14 +18,11 @@ import java.lang.reflect.Modifier.PUBLIC
 import java.util.function.Function
 
 
-class AddConstructorDecorator<T>(val intf: Class<*>, val interceptor: ImplicitInterceptor)
-    : Function<DynamicType.Builder<T>, DynamicType.Builder<T>> {
+class AddConstructorDecorator<T>(private val type: Class<*>,
+                                 private val interceptor: ImplicitInterceptor) : Function<Builder<T>, Builder<T>> {
 
-    /**
-     * {@inheritDoc}
-     */
     override fun apply(builder: DynamicType.Builder<T>): DynamicType.Builder<T> {
-        val getters = getters(intf)
+        val getters = getters(type)
         if (getters.isEmpty())
             return builder
 
@@ -35,17 +33,15 @@ class AddConstructorDecorator<T>(val intf: Class<*>, val interceptor: ImplicitIn
         }
 
         var annotatable: Annotatable<T> = interceptor.onConstructorParameter(builder.defineConstructor(PUBLIC)
-                .withParameter(getters(intf)[0].returnType))
+                .withParameter(getters(type)[0].returnType))
 
         var i = 1
-        while (i < getters(intf).size) {
-            val method = getters(intf)[i]
+        while (i < getters(type).size) {
+            val method = getters(type)[i]
             annotatable = interceptor.onConstructorParameter(annotatable
                     .withParameter(method.returnType))
             i++
         }
-
-
 
         return applyMapConstructor(annotatable.intercept(invoke))
     }
@@ -53,10 +49,8 @@ class AddConstructorDecorator<T>(val intf: Class<*>, val interceptor: ImplicitIn
     private fun applyMapConstructor(builder: DynamicType.Builder<T>): DynamicType.Builder<T> {
         return builder.defineConstructor(PUBLIC)
                 .withParameter(Map::class.java)
-                .intercept(
-                        MethodCall.invoke(Any::class.java.getConstructor()).andThen(
-                                MethodDelegation.to(MapConstructorInterceptor
-                                )))
+                .intercept(MethodCall.invoke(Any::class.java.getConstructor()).andThen(
+                        MethodDelegation.to(MapConstructorInterceptor)))
     }
 
     private fun getters(cls: Class<*>): List<Method> {
@@ -77,10 +71,9 @@ class AddConstructorDecorator<T>(val intf: Class<*>, val interceptor: ImplicitIn
                     .filter { it.name.startsWith("set") }
                     .forEach {
                         val field = it.name.substring(3).decapitalize()
-                        if (!map.containsKey(field)) {
-                            throw ImplicitException("no map entry '${it.name}' found")
-                        } else {
-                            it.invoke(obj, map[field])
+                        when (map.containsKey(field)) {
+                            true -> it.invoke(obj, map[field])
+                            else -> throw ImplicitException("no map entry '${it.name}' found")
                         }
                     }
         }

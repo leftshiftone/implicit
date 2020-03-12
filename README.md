@@ -70,6 +70,56 @@ interface IPojo {
 }
 ````
 
+## Alias
+The @Alias annotation can be used to create an alias method which delegates to the annotated method.
+The @Alias annotation can be embedded in an other annotation.
+
+````
+interface Entity {
+   @Alias("partitionKey") // creates a 'getPartitionKey' method which delegates to 'getIdentityId'
+   fun getIdentityId():String
+}
+````
+
+## Mixin
+The @Mixin annotation can be used to add a mixin class to the class of the annotated method on the fly.
+The @Mixin annotation can be embedded in an other annotation.
+
+````
+interface PartitionKeyAware {
+   fun getPartitionKey()
+}
+
+interface Entity {
+   @Alias("partitionKey")
+   @Mixin(PartitionKeyAware::class)
+   fun getIdentityId():String
+}
+````
+
+## Default
+The @Default annotation can be used on getter methods to define a default value when the getter method would return null.
+The @Default annotation can be embedded in an other annotation.
+
+This mechanism supports all standard datatypes (int, float, string, ...) as well as
+list and map structures.
+
+````
+interface Entity {
+   @Default("defaultValue")
+   fun getStringVal():String?
+   @Default("0")
+   fun getFloatVal():Float?
+   @Default("true")
+   fun getBooleanVal():Boolean?
+   @Default
+   fun getListVal():List<String>?
+   @Default
+   fun getMapVal():Map<String, String>?
+}
+````
+
+
 ## Development
 
 ### Release
