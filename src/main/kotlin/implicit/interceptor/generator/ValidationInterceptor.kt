@@ -1,10 +1,10 @@
-package implicit.validation
+package implicit.interceptor.generator
 
 import implicit.annotation.Implicit
 import implicit.annotation.Implicit.Type.VALIDATOR
 import implicit.annotation.validation.*
 import implicit.exception.ImplicitException
-import implicit.validation.validator.*
+import implicit.interceptor.validator.*
 import net.bytebuddy.implementation.bind.annotation.Origin
 import net.bytebuddy.implementation.bind.annotation.RuntimeType
 import java.lang.reflect.Method

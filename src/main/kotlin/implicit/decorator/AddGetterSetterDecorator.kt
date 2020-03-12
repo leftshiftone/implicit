@@ -3,8 +3,8 @@ package implicit.decorator
 import implicit.annotation.Explicit
 import implicit.annotation.Implicit
 import implicit.annotation.generator.Default
-import implicit.validation.DefaultValueInterceptor
-import implicit.validation.ValidationInterceptor
+import implicit.interceptor.generator.DefaultInterceptor
+import implicit.interceptor.generator.ValidationInterceptor
 import net.bytebuddy.description.ByteCodeElement
 import net.bytebuddy.description.method.MethodDescription
 import net.bytebuddy.description.type.TypeDescription
@@ -62,7 +62,7 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
                         .and(nameMatcher)
                         .and(isAnnotatedWith(Default::class.java))
                 )
-                .intercept(MethodDelegation.to(DefaultValueInterceptor))
+                .intercept(MethodDelegation.to(DefaultInterceptor))
     }
 
 }

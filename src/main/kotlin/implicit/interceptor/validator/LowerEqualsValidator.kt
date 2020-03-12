@@ -1,4 +1,4 @@
-package implicit.validation.validator
+package implicit.interceptor.validator
 
 import implicit.annotation.validation.LowerEquals
 import implicit.exception.ImplicitValidationException

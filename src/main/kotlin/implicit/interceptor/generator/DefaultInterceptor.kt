@@ -1,4 +1,4 @@
-package implicit.validation
+package implicit.interceptor.generator
 
 import implicit.annotation.generator.Default
 import net.bytebuddy.implementation.bind.annotation.Origin
@@ -9,7 +9,7 @@ import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
 
-object DefaultValueInterceptor {
+object DefaultInterceptor {
 
     private val annotationCache = ConcurrentHashMap<String, Default>()
     private val fieldCache = ConcurrentHashMap<String, Field>()
