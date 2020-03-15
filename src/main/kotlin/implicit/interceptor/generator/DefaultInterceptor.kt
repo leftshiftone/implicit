@@ -16,11 +16,11 @@ object DefaultInterceptor {
 
     @RuntimeType
     fun intercept(@Origin method: Method, @This obj: Any): Any? {
-        annotationCache.computeIfAbsent(method.name) { _ -> method.getAnnotation(Default::class.java) }
-        val annotation = annotationCache[method.name]!!
+        annotationCache.computeIfAbsent(getKey(method)) { _ -> method.getAnnotation(Default::class.java) }
+        val annotation = annotationCache[getKey(method)]!!
 
-        fieldCache.computeIfAbsent(method.name) { _ -> getField(method, obj) }
-        return fieldCache[method.name]!!.get(obj) ?: when (method.returnType.simpleName) {
+        fieldCache.computeIfAbsent(getKey(method)) { _ -> getField(method, obj) }
+        return fieldCache[getKey(method)]!!.get(obj) ?: when (method.returnType.simpleName) {
             "String" -> annotation.value
             "Integer" -> coalesce(annotation.value, "0").toInt()
             "Int" -> coalesce(annotation.value, "0").toInt()
@@ -46,5 +46,9 @@ object DefaultInterceptor {
     }
 
     private fun coalesce(str:String, defaultStr:String) = if (str.isBlank()) defaultStr else str
+
+    private fun getKey(method:Method): String {
+        return method.declaringClass.name + "#" + method.name
+    }
 
 }
