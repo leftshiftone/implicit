@@ -23,9 +23,6 @@ class AliasDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Build
         for (method in intf.declaredMethods) {
             val annotation = getAnnotation(method.declaredAnnotations)
 
-            println(method.name)
-            println(method.returnType)
-
             if (annotation != null) {
                 val modifier = Modifier.PUBLIC
                 result = result.defineMethod("get" + annotation.capitalize(), String::class.java, modifier)
