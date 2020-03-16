@@ -18,11 +18,21 @@ class AliasDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Build
 
     private fun handleGenerators(builder: DynamicType.Builder<T>): DynamicType.Builder<T> {
         var result = builder
+
+
         for (method in intf.declaredMethods) {
             val annotation = getAnnotation(method.declaredAnnotations)
+
+            println(method.name)
+            println(method.returnType)
+
             if (annotation != null) {
                 val modifier = Modifier.PUBLIC
                 result = result.defineMethod("get" + annotation.capitalize(), String::class.java, modifier)
+                        .intercept(FieldAccessor.ofField(method.name.substring(3).decapitalize()))
+
+                result = result.defineMethod("set" + annotation.capitalize(), Void.TYPE, modifier)
+                        .withParameter(String::class.java)
                         .intercept(FieldAccessor.ofField(method.name.substring(3).decapitalize()))
             }
         }

@@ -10,12 +10,23 @@ import java.util.*
 class AliasTest {
 
     @Test
-    fun `create instance with getter annotation`() {
+    fun `create instance with alias annotation`() {
         val factory = Implicit { "implicit.generator.alias.${it.simpleName}" }
         val supplier = factory.getSupplier(Entity::class.java)
 
         val pojo = supplier.get()
         pojo.setId(UUID.randomUUID().toString())
+
+        Assertions.assertNotNull(pojo.getPartitionKey())
+    }
+
+    @Test
+    fun `create instance with alias annotation 2`() {
+        val factory = Implicit { "implicit.generator.alias.${it.simpleName}" }
+        val supplier = factory.getSupplier(Entity::class.java)
+
+        val pojo = supplier.get()
+        pojo.setPartitionKey(UUID.randomUUID().toString())
 
         Assertions.assertNotNull(pojo.getPartitionKey())
     }
@@ -34,6 +45,7 @@ class AliasTest {
 
     interface PartitionKeyAware {
         fun getPartitionKey():String
+        fun setPartitionKey(partitionKey: String)
     }
 
 }
