@@ -62,6 +62,7 @@ Implicit has the following built-in annotations:
 | Email          | Target value must match the email regex pattern                 |
 | URL            | Target value must match the url regex pattern                   |
 | Docker         | Target value must match the docker image regex pattern          |
+| UUID           | Target value must match the uuid regex pattern          |
 
 ````
 interface IPojo {

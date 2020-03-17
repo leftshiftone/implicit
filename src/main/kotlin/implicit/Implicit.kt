@@ -34,8 +34,10 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         val addConstructor = AddConstructorDecorator<T>(intf, interceptor)::apply
         val addAlias = AliasDecorator<T>(intf)::apply
         val addMixin = MixinDecorator<T>(intf)::apply
+        val addEqualsHashCode = AddEqualsHashCodeDecorator<T>(intf)::apply
 
-        val unloaded = addMixin(addAlias(addGetterSetter(addField(addConstructor(init(intf)))))).make()
+        val unloaded = addEqualsHashCode(
+                addMixin(addAlias(addGetterSetter(addField(addConstructor(init(intf))))))).make()
         interceptor.onLoading(unloaded)
 
         val loaded = unloaded.load(Implicit::class.java.classLoader, INJECTION)
