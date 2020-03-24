@@ -1,5 +1,6 @@
 package implicit
 
+import implicit.conversion.TypeConversion
 import implicit.decorator.*
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.NamingStrategy
@@ -43,7 +44,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         val loaded = unloaded.load(Implicit::class.java.classLoader, INJECTION)
         interceptor.onLoaded(loaded)
 
-        val loadedType = loaded.getLoaded()
+        val loadedType = loaded.loaded
         intfTypeRegistry.put(intf.name, loadedType.name)
 
         return loadedType
@@ -90,7 +91,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
                     .forEach {
                         val field = it.name.substring(3).decapitalize()
                         if (map.containsKey(field)) {
-                            it.invoke(instance, map[field])
+                            it.invoke(instance, TypeConversion.convert(map[field], it.parameterTypes[0]))
                         }
                     }
             return@Function instance
