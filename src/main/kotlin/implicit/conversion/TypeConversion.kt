@@ -2,6 +2,7 @@ package implicit.conversion
 
 object TypeConversion {
 
+    @Suppress("UNCHECKED_CAST")
     fun <O> convert(from: Any?, to: Class<O>): O? {
         if (from == null) return null
         val fromClazz = from::class.java
