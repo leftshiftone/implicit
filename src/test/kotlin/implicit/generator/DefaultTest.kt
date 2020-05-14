@@ -11,7 +11,7 @@ class DefaultTest {
     @Test
     fun `create instance with getter annotation`() {
         val factory = Implicit { "implicit.generator.default_.${it.simpleName}" }
-        val supplier = factory.getSupplier(Entity::class.java)
+        val supplier = factory.getSupplier(Entity::class.java, true)
 
         val pojo = supplier.get()
         Assertions.assertEquals("defaultValue", pojo.getAbc())
@@ -23,7 +23,7 @@ class DefaultTest {
     @Test
     fun `create instance with getter annotation in a loop`() {
         val factory = Implicit { "implicit.generator.default_.${it.simpleName}" }
-        val supplier = factory.getSupplier(Entity::class.java)
+        val supplier = factory.getSupplier(Entity::class.java, true)
 
         (1..1000000).forEach { _ ->
             val pojo = supplier.get()

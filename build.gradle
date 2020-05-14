@@ -39,6 +39,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect"
     compile "net.bytebuddy:byte-buddy:1.9.12"
+    
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
 
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testCompile "org.assertj:assertj-core:3.11.1"

@@ -19,7 +19,7 @@ class MixinTest {
         pojo.setId(UUID.randomUUID().toString())
 
         Assertions.assertNotNull(pojo.getPartitionKey())
-        Assertions.assertEquals(pojo::class.java.interfaces.size, 2)
+        Assertions.assertEquals(pojo::class.java.interfaces.size, 3)
     }
 
     @Retention(AnnotationRetention.RUNTIME)

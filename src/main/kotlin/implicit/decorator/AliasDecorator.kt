@@ -19,7 +19,6 @@ class AliasDecorator<T>(private val intf: Class<*>) : Function<DynamicType.Build
     private fun handleGenerators(builder: DynamicType.Builder<T>): DynamicType.Builder<T> {
         var result = builder
 
-
         for (method in intf.declaredMethods) {
             val annotation = getAnnotation(method.declaredAnnotations)
 

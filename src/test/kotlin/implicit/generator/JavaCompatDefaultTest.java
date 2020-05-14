@@ -13,7 +13,7 @@ public class JavaCompatDefaultTest {
 
     @Test
     public void test() {
-        final Implicit factory = new Implicit(e -> "implicit.generator.default_." + e.getSimpleName());
+        final Implicit factory = new Implicit(e -> "implicit.generator.compat." + e.getSimpleName());
         final Supplier<? extends Entity> supplier = factory.getSupplier(Entity.class);
 
         final Entity entity = supplier.get();
