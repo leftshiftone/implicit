@@ -4,12 +4,12 @@ buildscript {
     }
     repositories {
         jcenter()
-        mavenCentral()
     }
     dependencies {
         classpath "one.leftshift.asteria:asteria-code-analytics:latest.release"
         classpath "one.leftshift.asteria:asteria-dependency:latest.release"
         classpath "one.leftshift.asteria:asteria-email:latest.release"
+        classpath "one.leftshift.asteria:asteria-publish:latest.release"
         classpath "one.leftshift.asteria:asteria-report:latest.release"
         classpath "one.leftshift.asteria:asteria-version:latest.release"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versionKotlin}"
@@ -19,34 +19,32 @@ buildscript {
     }
 }
 
-repositories {
-    jcenter()
-    mavenCentral()
-}
-
 apply plugin: "kotlin"
 apply plugin: "org.jetbrains.dokka"
-apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 
 apply plugin: "one.leftshift.asteria-email"
 apply plugin: "one.leftshift.asteria-report"
 apply plugin: "one.leftshift.asteria-code-analytics"
 apply plugin: "one.leftshift.asteria-dependency"
+apply plugin: "one.leftshift.asteria-publish"
 apply plugin: "one.leftshift.asteria-version"
+
+repositories {
+    jcenter()
+}
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect"
     compile "net.bytebuddy:byte-buddy:1.9.12"
     
-    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
+    compileOnly "com.fasterxml.jackson.core:jackson-databind:2.10.4"
 
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testCompile "org.assertj:assertj-core:3.11.1"
     testRuntime "org.slf4j:slf4j-simple:1.7.26"
-
-    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
+    testCompile "com.fasterxml.jackson.core:jackson-databind:2.10.4"
 }
 asteriaEmail {
     smtpHost = System.getenv("ASTERIA_EMAIL_SMTP_HOST")
@@ -68,6 +66,7 @@ asteriaReport {
 
 asteriaDependency {
     dependencyManagementEnabled = false
+    enableBranchSnapshotRepositories = true
 }
 
 asteriaCodeAnalytics {
@@ -106,13 +105,12 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = "javadoc"
     outputDirectory = "${buildDir}/dokkaJavadoc"
 }
-task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier "sources"
-}
 task javadocJar(type: Jar) {
     from dokkaJavadoc
     classifier "javadoc"
+}
+asteriaPublish {
+    enableBranchSnapshotRepositories = true
 }
 publishing {
     publications {
