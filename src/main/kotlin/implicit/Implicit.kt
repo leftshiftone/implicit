@@ -86,8 +86,8 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     @Suppress("UNCHECKED_CAST")
     fun <T> getFunction(type: Class<T>, cache: Boolean = false): Function<Map<*, *>, out T> {
         return Function { map ->
-            val instance = instantiate(type, cache)
-            type.declaredMethods
+            val instance:T = instantiate(type, cache)
+            getType(instance!!).declaredMethods
                     .filter { it.name.startsWith("set") }
                     .forEach {
                         val field = it.name.substring(3).decapitalize()
@@ -118,5 +118,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
             }
         }).subclass(intf).annotateType(*intf.annotations)
     }
+
+    private fun getType(obj: Any) = obj::class.java
 
 }
