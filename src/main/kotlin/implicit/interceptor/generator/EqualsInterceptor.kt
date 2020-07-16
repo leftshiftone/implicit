@@ -16,19 +16,22 @@ object EqualsInterceptor {
     @RuntimeType
     fun intercept(@This obj: Any, @Argument(0) arg: Any): Any? {
         val cls = obj::class.java
-        methodCache.putIfAbsent(cls.name, getRelevantMethods(cls))
+        methodCache.computeIfAbsent(cls.name) {getRelevantMethods(cls)}
 
         val values1 = methodCache[cls.name]!!.map { it.invoke(obj) }
         val values2 = methodCache[cls.name]!!.map { it.invoke(arg) }
 
-        return Objects.hash(values1).equals(Objects.hash(values2))
+        return Objects.hash(values1) == Objects.hash(values2)
     }
 
     private fun getRelevantMethods(cls: Class<*>): List<Method> {
         return cls.declaredMethods
                 .filter { m -> m.name.startsWith("get") }
                 .filter { m -> !m.isDefault }
-                .filter { m -> !m.isAnnotationPresent(EqualsHashCode::class.java) }
+                .filter { m ->
+                    val annotation = m.getAnnotation(EqualsHashCode::class.java)
+                    annotation == null || !annotation.exclude
+                }
     }
 
 }

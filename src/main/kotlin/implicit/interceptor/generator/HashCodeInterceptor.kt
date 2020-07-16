@@ -15,7 +15,7 @@ object HashCodeInterceptor {
     @RuntimeType
     fun intercept(@This obj: Any): Any? {
         val cls = obj::class.java
-        methodCache.putIfAbsent(cls.name, getRelevantMethods(cls))
+        methodCache.computeIfAbsent(cls.name) { getRelevantMethods(cls) }
 
         val values = methodCache[cls.name]!!.map { it.invoke(obj) }
         return Objects.hash(values)
@@ -25,7 +25,10 @@ object HashCodeInterceptor {
         return cls.declaredMethods
                 .filter { m -> m.name.startsWith("get") }
                 .filter { m -> !m.isDefault }
-                .filter { m -> !m.isAnnotationPresent(EqualsHashCode::class.java) }
+                .filter { m ->
+                    val annotation = m.getAnnotation(EqualsHashCode::class.java)
+                    annotation == null || !annotation.exclude
+                }
     }
 
 }

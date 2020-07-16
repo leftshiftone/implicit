@@ -9,4 +9,4 @@ import kotlin.annotation.AnnotationTarget.FUNCTION
 @Retention(RUNTIME)
 @Target(FUNCTION, ANNOTATION_CLASS)
 @Implicit(GENERATOR)
-annotation class EqualsHashCode(val exclude:Boolean = false)
+annotation class ToString(val exclude:Boolean = false)
