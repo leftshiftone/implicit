@@ -109,6 +109,18 @@ interface Entity {
 }
 ````
 
+
+## ToString
+The @ToString annotation can be used to define which fields should be used for the toString generation.
+The @ToString annotation can be embedded in an other annotation.
+
+````
+interface Entity {
+   @ToString
+   fun getIdentityId():String
+}
+````
+
 ## Default
 The @Default annotation can be used on getter methods to define a default value when the getter method would return null.
 The @Default annotation can be embedded in an other annotation.

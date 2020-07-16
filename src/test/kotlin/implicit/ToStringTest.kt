@@ -37,10 +37,11 @@ class ToStringTest {
         pojo2.setPartitionKey("A")
         pojo2.setSortingKey("B")
 
-        Assertions.assertEquals(pojo1.toString(), "IPojoA(partitionKey=A, sortingKey=B)")
-        Assertions.assertEquals(pojo2.toString(), "IPojoB()")
+        Assertions.assertEquals("IPojoA(partitionKey=A, sortingKey=B)", pojo1.toString())
+        Assertions.assertEquals("IPojoB()", pojo2.toString())
     }
 
+    @ToString
     interface IPojoA {
         fun getPartitionKey():String?
         fun setPartitionKey(@NotNull str: String?)

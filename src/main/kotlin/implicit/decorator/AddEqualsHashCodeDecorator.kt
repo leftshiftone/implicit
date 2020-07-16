@@ -1,6 +1,7 @@
 package implicit.decorator
 
 import implicit.annotation.generator.EqualsHashCode
+import implicit.extension.findAnnotation
 import implicit.interceptor.generator.EqualsInterceptor
 import implicit.interceptor.generator.HashCodeInterceptor
 import net.bytebuddy.dynamic.DynamicType
@@ -24,10 +25,19 @@ class AddEqualsHashCodeDecorator<T>(private val type: Class<*>) : Function<Build
     }
 
     private fun relevantFields(cls: Class<*>): List<String> {
+        val typeAnnotation = cls.findAnnotation(EqualsHashCode::class)
         return cls.declaredMethods
                 .filter { m -> m.name.startsWith("get") }
                 .filter { m -> !m.isDefault }
-                .filter { m -> !m.isAnnotationPresent(EqualsHashCode::class.java) }
+                .filter { m ->
+                    val annotation = m.findAnnotation(EqualsHashCode::class)
+
+                    if (annotation != null && !annotation.exclude)
+                        return@filter true
+                    if (typeAnnotation != null && !typeAnnotation.exclude)
+                        return@filter true
+                    return@filter false
+                }
                 .map { m -> m.name.substring(3).decapitalize() }
     }
 
