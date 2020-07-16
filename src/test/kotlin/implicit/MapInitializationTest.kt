@@ -61,6 +61,19 @@ class MapInitializationTest {
         Assertions.assertEquals(instance.getMyCoolNumber(), 1)
     }
 
+    @Test
+    fun `can convert types with nested types`() {
+        val factory = Implicit { "${this.javaClass.name.toLowerCase()}.${it.simpleName}" }
+        val function = factory.getFunction(IPojoA::class.java)
+
+        val instance = function.apply(mapOf(
+                "partitionKey" to "abc",
+                "content" to mapOf("partitionKey" to "123")
+        ))
+
+        Assertions.assertEquals(instance.getContent().getPartitionKey(), "123")
+    }
+
     interface IPojo {
         // @PartitionKey
         fun getPartitionKey(): String
@@ -86,5 +99,18 @@ class MapInitializationTest {
 
         fun getSomeList(): List<Int>
         fun setSomeList(l: List<Int>)
+    }
+
+    interface IPojoA {
+        fun getPartitionKey(): String
+        fun setPartitionKey(str: String)
+
+        fun getContent(): IPojoB
+        fun setContent(content: IPojoB)
+    }
+
+    interface IPojoB {
+        fun getPartitionKey(): String
+        fun setPartitionKey(str: String)
     }
 }

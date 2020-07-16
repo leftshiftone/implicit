@@ -92,7 +92,12 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
                     .forEach {
                         val field = it.name.substring(3).decapitalize()
                         if (map.containsKey(field)) {
-                            it.invoke(instance, TypeConversion.convert(map[field], it.parameterTypes[0]))
+                            val clazz = it.parameterTypes[0]
+                            if (clazz.isInterface && clazz != Map::class.java && map[field] is Map<*, *>) {
+                                it.invoke(instance, instantiate(clazz, map[field] as Map<*, *>))
+                            }
+                            else
+                                it.invoke(instance, TypeConversion.convert(map[field], it.parameterTypes[0]))
                         }
                     }
             return@Function instance
