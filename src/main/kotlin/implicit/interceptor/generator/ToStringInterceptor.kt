@@ -31,10 +31,10 @@ object ToStringInterceptor {
                 .filter { m ->
                     val annotation = m.findAnnotation(ToString::class)
 
-                    if (annotation != null && !annotation.exclude)
-                        return@filter true
-                    if (typeAnnotation != null && !typeAnnotation.exclude)
-                        return@filter true
+                    if (annotation != null)
+                        return@filter !annotation.exclude
+                    if (typeAnnotation != null)
+                        return@filter !typeAnnotation.exclude
                     return@filter false
                 }
                 .map { m -> m.name.substring(3).decapitalize() }
