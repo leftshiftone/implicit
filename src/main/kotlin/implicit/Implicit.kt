@@ -104,7 +104,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
                             ImplicitViolations(acc.violations.plus(ex))
                         }
                     }
-            if(implicitViolations!=null && !implicitViolations.violations.isEmpty()){
+            if(!implicitViolations.violations.isEmpty()){
                 throw implicitViolations
             }
             return@Function instance
