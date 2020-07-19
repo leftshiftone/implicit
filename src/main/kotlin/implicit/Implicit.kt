@@ -3,6 +3,8 @@ package implicit
 import implicit.conversion.TypeConversion
 import implicit.decorator.*
 import implicit.exception.ImplicitException
+import implicit.exception.ImplicitValidationException
+import implicit.exception.ImplicitViolations
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.NamingStrategy
 import net.bytebuddy.description.method.MethodDescription
@@ -91,13 +93,20 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     fun <T> getFunction(type: Class<T>, cache: Boolean = false): Function<Map<*, *>, out T> {
         return Function { map ->
             val instance: T = instantiate(type, cache)
-            getType(instance!!).declaredMethods
+            val implicitViolations = getType(instance!!).declaredMethods
                     .filter { method -> isSetter(method) }
-                    .forEach { method ->
-                        val field = getFieldNameFromSetterMethod(method)
-                        setMapValueInInstance(instance, method, map[field])
-
+                    .fold(ImplicitViolations(listOf())) { acc, entry ->
+                        try {
+                            val field = getFieldNameFromSetterMethod(entry)
+                            setMapValueInInstance(instance, entry, map[field])
+                            acc
+                        } catch (ex: ImplicitValidationException) {
+                            ImplicitViolations(acc.violations.plus(ex))
+                        }
                     }
+            if(implicitViolations!=null && !implicitViolations.violations.isEmpty()){
+                throw implicitViolations
+            }
             return@Function instance
         }
     }

@@ -43,16 +43,16 @@ class NotEmptyValidatorTest {
         val instance = supplier.get()
 
         try {
-            instance.setList(null)
+            instance.setCollectionList(null)
         } catch (ex: ImplicitException) {
             counter.incrementAndGet()
         }
         try {
-            instance.setList(listOf("abc","def"))
+            instance.setCollectionList(listOf("abc","def"))
         } catch (ex: ImplicitException) {
             counter.incrementAndGet()
         }
-        Assertions.assertNotNull(instance.getList())
+        Assertions.assertNotNull(instance.getCollectionList())
         Assertions.assertEquals(counter.get(), 1)
     }
 
@@ -72,7 +72,7 @@ class NotEmptyValidatorTest {
         }
         try {
             instance.setName("test")
-            instance.setList(listOf("abc"))
+            instance.setCollectionList(listOf("abc"))
         } catch (ex: ImplicitException) {
             counter.incrementAndGet()
         }
@@ -90,17 +90,18 @@ class NotEmptyValidatorTest {
         val instance = supplier.get()
 
         try {
-            instance.setList(listOf<Any>())
+            instance.setCollectionList(listOf<Any>())
         } catch (ex: ImplicitException) {
             counter.incrementAndGet()
         }
         try {
             instance.setName("test")
-            instance.setList(listOf("abc","def"))
+            instance.setCollectionList(listOf("abc","def"))
+
         } catch (ex: ImplicitException) {
             counter.incrementAndGet()
         }
-        Assertions.assertNotNull(instance.getList())
+        Assertions.assertNotNull(instance.getCollectionList())
         Assertions.assertEquals(counter.get(), 1)
     }
 
@@ -133,7 +134,7 @@ class NotEmptyValidatorTest {
             counter.incrementAndGet()
         }
         Assertions.assertNull(instance.getName())
-        Assertions.assertNull(instance.getList())
+        Assertions.assertNull(instance.getCollectionList())
         Assertions.assertEquals(counter.get(), 1)
     }
 
@@ -143,7 +144,7 @@ class NotEmptyValidatorTest {
 
         val counter = AtomicInteger()
         var instance = factory.getSupplier(ITest::class.java).get()
-        val map = mapOf<String, Any?>("name" to "")
+        val map = mapOf<String, Any?>("name" to "abc", "list" to mapOf<String,Any>())
         try {
             instance = factory.instantiate(ITest::class.java, map)
         } catch (ex: ImplicitException) {
@@ -157,8 +158,8 @@ class NotEmptyValidatorTest {
     interface ITest {
         fun setName(@NotEmpty name: String?)
         fun getName(): String?
-        fun setList(@NotEmpty list: List<*>?)
-        fun getList(): List<*>?
+        fun setCollectionList(@NotEmpty collectionList: List<Any>?)
+        fun getCollectionList(): List<Any>?
     }
 
 }
