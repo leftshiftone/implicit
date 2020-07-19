@@ -2,6 +2,7 @@ package implicit
 
 import implicit.conversion.TypeConversion
 import implicit.decorator.*
+import implicit.exception.ImplicitException
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.NamingStrategy
 import net.bytebuddy.description.method.MethodDescription
@@ -10,6 +11,8 @@ import net.bytebuddy.dynamic.DynamicType
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Default.INJECTION
 import net.bytebuddy.implementation.MethodDelegation
 import net.bytebuddy.matcher.ElementMatchers.isDeclaredBy
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.function.Supplier
@@ -89,19 +92,51 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         return Function { map ->
             val instance:T = instantiate(type, cache)
             getType(instance!!).declaredMethods
-                    .filter { it.name.startsWith("set") }
-                    .forEach {
-                        val field = it.name.substring(3).decapitalize()
+                    .filter { method -> isSetter(method) }
+                    .forEach { method ->
+                        val field =getFieldNameFromSetterMethod(method)
                         if (map.containsKey(field)) {
-                            val clazz = it.parameterTypes[0]
-                            if (clazz.isInterface && clazz != Map::class.java && map[field] is Map<*, *>) {
-                                it.invoke(instance, instantiate(clazz, map[field] as Map<*, *>))
-                            }
+                            val clazz = method.parameterTypes[0]
+                            if (isNestedImplicitObject(clazz,map[field]))
+                                invoke(instance,method,instantiateNestedObject(clazz,map[field] as Map<*, *>))
                             else
-                                it.invoke(instance, TypeConversion.convert(map[field], it.parameterTypes[0]))
+                                invoke(instance,method,TypeConversion.convert(map[field], method.parameterTypes[0]))
+                        }else{
+                            initializeField(instance,method,method.parameterTypes[0])
                         }
                     }
             return@Function instance
+        }
+    }
+
+    fun getFieldNameFromSetterMethod(setter: Method):String = setter.name.substring(3).decapitalize()
+    fun isNestedImplicitObject(objClass: Class<*>, fieldValue: Any?) : Boolean = objClass.isInterface && objClass != Map::class.java && fieldValue is Map<*, *>
+    fun isSetter(method: Method) : Boolean = method.name.startsWith("set")
+    fun isGetter(method: Method) : Boolean = method.name.startsWith("get") || method.name.startsWith("is")
+    fun <T> instantiateNestedObject(clazz: Class<T>, map: Map<*,*>) = instantiate(clazz, map)
+
+    fun <T> initializeField(instance: T, setter: Method, parameterType: Class<*>) {
+        if(!isFieldInitialized(instance, getFieldNameFromSetterMethod(setter)) && !parameterType.isPrimitive){
+            invoke(instance, setter, null)
+        }
+    }
+
+    private fun <T> isFieldInitialized(instance: T, fieldName: String): Boolean {
+        val fieldGetter = getType(instance!!).declaredMethods
+                .filter { method -> isGetter(method) && method.name.contains(fieldName.capitalize()) }
+                .first()
+
+        return fieldGetter.invoke(instance)!=null
+    }
+
+    fun <T> invoke(instance: T, setter: Method, value: Any?) {
+        try{
+            setter.invoke(instance, value)
+        }catch (ex: InvocationTargetException) {
+            when (ex.targetException){
+                is ImplicitException -> throw ex.targetException
+                else -> throw ex
+            }
         }
     }
 
