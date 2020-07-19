@@ -90,33 +90,38 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     @Suppress("UNCHECKED_CAST")
     fun <T> getFunction(type: Class<T>, cache: Boolean = false): Function<Map<*, *>, out T> {
         return Function { map ->
-            val instance:T = instantiate(type, cache)
+            val instance: T = instantiate(type, cache)
             getType(instance!!).declaredMethods
                     .filter { method -> isSetter(method) }
                     .forEach { method ->
-                        val field =getFieldNameFromSetterMethod(method)
-                        if (map.containsKey(field)) {
-                            val clazz = method.parameterTypes[0]
-                            if (isNestedImplicitObject(clazz,map[field]))
-                                invoke(instance,method,instantiateNestedObject(clazz,map[field] as Map<*, *>))
-                            else
-                                invoke(instance,method,TypeConversion.convert(map[field], method.parameterTypes[0]))
-                        }else{
-                            initializeField(instance,method,method.parameterTypes[0])
-                        }
+                        val field = getFieldNameFromSetterMethod(method)
+                        setMapValueInInstance(instance, method, map[field])
+
                     }
             return@Function instance
         }
     }
 
-    fun getFieldNameFromSetterMethod(setter: Method):String = setter.name.substring(3).decapitalize()
-    fun isNestedImplicitObject(objClass: Class<*>, fieldValue: Any?) : Boolean = objClass.isInterface && objClass != Map::class.java && fieldValue is Map<*, *>
-    fun isSetter(method: Method) : Boolean = method.name.startsWith("set")
-    fun isGetter(method: Method) : Boolean = method.name.startsWith("get") || method.name.startsWith("is")
-    fun <T> instantiateNestedObject(clazz: Class<T>, map: Map<*,*>) = instantiate(clazz, map)
+    fun <T> setMapValueInInstance(instance: T, method: Method, fieldValue: Any?) {
+        if (fieldValue != null) {
+            val clazz = method.parameterTypes[0]
+            if (isNestedImplicitObject(clazz, fieldValue))
+                invoke(instance, method, instantiateNestedObject(clazz, fieldValue as Map<*, *>))
+            else
+                invoke(instance, method, TypeConversion.convert(fieldValue, method.parameterTypes[0]))
+        } else {
+            initializeField(instance, method, method.parameterTypes[0])
+        }
+    }
+
+    fun getFieldNameFromSetterMethod(setter: Method): String = setter.name.substring(3).decapitalize()
+    fun isNestedImplicitObject(objClass: Class<*>, fieldValue: Any?): Boolean = objClass.isInterface && objClass != Map::class.java && fieldValue is Map<*, *>
+    fun isSetter(method: Method): Boolean = method.name.startsWith("set")
+    fun isGetter(method: Method): Boolean = method.name.startsWith("get") || method.name.startsWith("is")
+    fun <T> instantiateNestedObject(clazz: Class<T>, map: Map<*, *>) = instantiate(clazz, map)
 
     fun <T> initializeField(instance: T, setter: Method, parameterType: Class<*>) {
-        if(!isFieldInitialized(instance, getFieldNameFromSetterMethod(setter)) && !parameterType.isPrimitive){
+        if (!isFieldInitialized(instance, getFieldNameFromSetterMethod(setter)) && !parameterType.isPrimitive) {
             invoke(instance, setter, null)
         }
     }
@@ -126,14 +131,14 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
                 .filter { method -> isGetter(method) && method.name.contains(fieldName.capitalize()) }
                 .first()
 
-        return fieldGetter.invoke(instance)!=null
+        return fieldGetter.invoke(instance) != null
     }
 
     fun <T> invoke(instance: T, setter: Method, value: Any?) {
-        try{
+        try {
             setter.invoke(instance, value)
-        }catch (ex: InvocationTargetException) {
-            when (ex.targetException){
+        } catch (ex: InvocationTargetException) {
+            when (ex.targetException) {
                 is ImplicitException -> throw ex.targetException
                 else -> throw ex
             }
