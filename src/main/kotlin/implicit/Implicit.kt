@@ -2,6 +2,9 @@ package implicit
 
 import implicit.conversion.TypeConversion
 import implicit.decorator.*
+import implicit.exception.ImplicitException
+import implicit.exception.ImplicitValidationException
+import implicit.exception.ImplicitViolations
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.NamingStrategy
 import net.bytebuddy.description.method.MethodDescription
@@ -10,6 +13,8 @@ import net.bytebuddy.dynamic.DynamicType
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Default.INJECTION
 import net.bytebuddy.implementation.MethodDelegation
 import net.bytebuddy.matcher.ElementMatchers.isDeclaredBy
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.function.Supplier
@@ -87,21 +92,65 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     @Suppress("UNCHECKED_CAST")
     fun <T> getFunction(type: Class<T>, cache: Boolean = false): Function<Map<*, *>, out T> {
         return Function { map ->
-            val instance:T = instantiate(type, cache)
-            getType(instance!!).declaredMethods
-                    .filter { it.name.startsWith("set") }
-                    .forEach {
-                        val field = it.name.substring(3).decapitalize()
-                        if (map.containsKey(field)) {
-                            val clazz = it.parameterTypes[0]
-                            if (clazz.isInterface && clazz != Map::class.java && map[field] is Map<*, *>) {
-                                it.invoke(instance, instantiate(clazz, map[field] as Map<*, *>))
-                            }
-                            else
-                                it.invoke(instance, TypeConversion.convert(map[field], it.parameterTypes[0]))
+            val instance: T = instantiate(type, cache)
+            val implicitViolations = getType(instance!!).declaredMethods
+                    .filter { method -> isSetter(method) }
+                    .fold(ImplicitViolations(listOf())) { acc, entry ->
+                        try {
+                            val field = getFieldNameFromSetterMethod(entry)
+                            setMapValueInInstance(instance, entry, map[field])
+                            acc
+                        } catch (ex: ImplicitValidationException) {
+                            ImplicitViolations(acc.violations.plus(ex))
                         }
                     }
+            if(!implicitViolations.violations.isEmpty()){
+                throw implicitViolations
+            }
             return@Function instance
+        }
+    }
+
+    fun <T> setMapValueInInstance(instance: T, method: Method, fieldValue: Any?) {
+        if (fieldValue != null) {
+            val clazz = method.parameterTypes[0]
+            if (isNestedImplicitObject(clazz, fieldValue))
+                invoke(instance, method, instantiateNestedObject(clazz, fieldValue as Map<*, *>))
+            else
+                invoke(instance, method, TypeConversion.convert(fieldValue, method.parameterTypes[0]))
+        } else {
+            initializeField(instance, method, method.parameterTypes[0])
+        }
+    }
+
+    fun getFieldNameFromSetterMethod(setter: Method): String = setter.name.substring(3).decapitalize()
+    fun isNestedImplicitObject(objClass: Class<*>, fieldValue: Any?): Boolean = objClass.isInterface && objClass != Map::class.java && fieldValue is Map<*, *>
+    fun isSetter(method: Method): Boolean = method.name.startsWith("set")
+    fun isGetter(method: Method): Boolean = method.name.startsWith("get") || method.name.startsWith("is")
+    fun <T> instantiateNestedObject(clazz: Class<T>, map: Map<*, *>) = instantiate(clazz, map)
+
+    fun <T> initializeField(instance: T, setter: Method, parameterType: Class<*>) {
+        if (!isFieldInitialized(instance, getFieldNameFromSetterMethod(setter)) && !parameterType.isPrimitive) {
+            invoke(instance, setter, null)
+        }
+    }
+
+    private fun <T> isFieldInitialized(instance: T, fieldName: String): Boolean {
+        val fieldGetter = getType(instance!!).declaredMethods
+                .filter { method -> isGetter(method) && method.name.contains(fieldName.capitalize()) }
+                .first()
+
+        return fieldGetter.invoke(instance) != null
+    }
+
+    fun <T> invoke(instance: T, setter: Method, value: Any?) {
+        try {
+            setter.invoke(instance, value)
+        } catch (ex: InvocationTargetException) {
+            when (ex.targetException) {
+                is ImplicitException -> throw ex.targetException
+                else -> throw ex
+            }
         }
     }
 

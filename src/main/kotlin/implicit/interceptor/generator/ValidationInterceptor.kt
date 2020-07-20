@@ -39,6 +39,7 @@ object ValidationInterceptor {
             is LowerThan -> return LowerThanValidator(annotation)
             is LowerEquals -> return LowerEqualsValidator(annotation)
             is NotBlank -> return NotBlankValidator(annotation)
+            is NotEmpty -> return NotEmptyValidator(annotation)
             is MaxLength -> return MaxLengthValidator(annotation)
             is MinLength -> return MinLengthValidator(annotation)
             is ContentNotNull -> return ContentNullValidator(annotation)
