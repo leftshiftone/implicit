@@ -104,7 +104,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
                             ImplicitViolations(acc.violations.plus(ex))
                         }
                     }
-            if(!implicitViolations.violations.isEmpty()){
+            if (!implicitViolations.violations.isEmpty()) {
                 throw implicitViolations
             }
             return@Function instance
@@ -149,8 +149,10 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         } catch (ex: InvocationTargetException) {
             when (ex.targetException) {
                 is ImplicitException -> throw ex.targetException
-                else -> throw ex
+                else -> throw ImplicitException("Failed to invoke ${setter.name} with value $value", ex)
             }
+        } catch (ex: Exception) {
+            throw ImplicitException("Failed to invoke ${setter.name} with value $value", ex)
         }
     }
 
