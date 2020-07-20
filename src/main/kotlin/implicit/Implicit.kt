@@ -145,7 +145,13 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
     fun <T> invoke(instance: T, setter: Method, value: Any?) {
         try {
-            setter.invoke(instance, value)
+            if (setter.parameterTypes.first().isAssignableFrom(List::class.java) && value is Array<*>) {
+                setter.invoke(instance, value.toList())
+            } else if (setter.parameterTypes.first().isAssignableFrom(Set::class.java) && value is Array<*>) {
+                setter.invoke(instance, value.toSet())
+            } else {
+                setter.invoke(instance, value)
+            }
         } catch (ex: InvocationTargetException) {
             when (ex.targetException) {
                 is ImplicitException -> throw ex.targetException

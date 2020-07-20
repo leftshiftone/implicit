@@ -17,6 +17,7 @@
 package implicit;
 
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.util.*
 
@@ -33,8 +34,8 @@ class ImplicitTest {
 
         pojo::class.java.declaredFields.forEach(System.out::println)
 
-        Assertions.assertNotNull(pojo.getPartitionKey())
-        Assertions.assertNotNull(pojo.getSortingKey())
+        assertNotNull(pojo.getPartitionKey())
+        assertNotNull(pojo.getSortingKey())
         Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
     }
 
@@ -46,9 +47,31 @@ class ImplicitTest {
         val pojo = function.apply(mapOf("partitionKey" to UUID.randomUUID().toString(),
                 "sortingKey" to UUID.randomUUID().toString()))
 
-        Assertions.assertNotNull(pojo.getPartitionKey())
-        Assertions.assertNotNull(pojo.getSortingKey())
+        assertNotNull(pojo.getPartitionKey())
+        assertNotNull(pojo.getSortingKey())
         Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
+    }
+
+    @Test
+    fun `map initialization with array input as list and set`() {
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
+        val function = factory.getFunction(IPojo::class.java)
+
+        val pojo = function.apply(mapOf("labelList" to arrayOf("#updated"), "labelSet" to arrayOf("#updated")))
+
+        assertNotNull(pojo.getLabelList())
+        assertNotNull(pojo.getLabelSet())
+    }
+
+    @Test
+    fun `map initialization with list and set input`() {
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
+        val function = factory.getFunction(IPojo::class.java)
+
+        val pojo = function.apply(mapOf("labelList" to listOf("#updated"), "labelSet" to setOf("#updated")))
+
+        assertNotNull(pojo.getLabelList())
+        assertNotNull(pojo.getLabelSet())
     }
 
     @Test
@@ -61,14 +84,14 @@ class ImplicitTest {
             pojo.setPartitionKey(it.toString())
             pojo.setSortingKey(it.toString())
 
-            Assertions.assertNotNull(pojo.getPartitionKey())
-            Assertions.assertNotNull(pojo.getSortingKey())
+            assertNotNull(pojo.getPartitionKey())
+            assertNotNull(pojo.getSortingKey())
         }
     }
 
     @Retention(AnnotationRetention.RUNTIME)
     @Target(AnnotationTarget.CLASS)
-    annotation class Entity(val name:String)
+    annotation class Entity(val name: String)
 
     @Retention(AnnotationRetention.RUNTIME)
     @Target(AnnotationTarget.FUNCTION)
@@ -82,6 +105,11 @@ class ImplicitTest {
 
         fun getSortingKey(): String
         fun setSortingKey(str: String): Unit
-    }
 
+        fun getLabelList(): List<String?>
+        fun setLabelList(labelList: List<String?>)
+
+        fun getLabelSet(): Set<String?>
+        fun setLabelSet(labelList: Set<String?>)
+    }
 }
