@@ -4,6 +4,7 @@ import implicit.Implicit
 import implicit.annotation.Implicit.Type.GENERATOR
 import implicit.annotation.generator.Alias
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.util.*
 
@@ -17,7 +18,7 @@ class AliasTest {
         val pojo = supplier.get()
         pojo.setId(UUID.randomUUID().toString())
 
-        Assertions.assertNotNull(pojo.getPartitionKey())
+        assertNotNull(pojo.getPartitionKey())
     }
 
     @Test
@@ -28,7 +29,7 @@ class AliasTest {
         val pojo = supplier.get()
         pojo.setPartitionKey(UUID.randomUUID().toString())
 
-        Assertions.assertNotNull(pojo.getPartitionKey())
+        assertNotNull(pojo.getPartitionKey())
     }
 
     @Test
@@ -39,7 +40,7 @@ class AliasTest {
         val pojo = supplier.get()
         pojo.setPartitionKey(UUID.randomUUID().toString())
 
-        Assertions.assertNotNull(pojo.getId())
+        assertNotNull(pojo.getId())
     }
 
     @Test
@@ -47,7 +48,17 @@ class AliasTest {
         val factory = Implicit { "implicit.generator.alias.${it.simpleName}" }
         val pojo = factory.instantiate(Entity::class.java, mapOf("partitionKey" to UUID.randomUUID().toString()))
 
-        Assertions.assertNotNull(pojo.getId())
+        assertNotNull(pojo.getId())
+        assertNotNull(pojo.getPartitionKey())
+    }
+
+    @Test
+    fun `create instance with alias annotation 5`() {
+        val factory = Implicit { "implicit.generator.alias.${it.simpleName}" }
+        val pojo = factory.instantiate(Entity::class.java, mapOf("id" to UUID.randomUUID().toString()))
+
+        assertNotNull(pojo.getId())
+        assertNotNull(pojo.getPartitionKey())
     }
 
     @Retention(AnnotationRetention.RUNTIME)
