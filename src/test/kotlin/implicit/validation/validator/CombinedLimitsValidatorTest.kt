@@ -38,8 +38,8 @@ class CombinedLimitsValidatorTest {
             Assertions.fail<String>("Validation must fail because values do not respect the limits")
         } catch (ex: ImplicitViolations) {
             assertThat(ex.violations).hasSize(2)
-            assertThat(ex.violations.get(0)).extracting{ it.message}.isEqualTo("value of field 'setFloatValue' is > 3.5")
-            assertThat(ex.violations.get(1)).extracting{ it.message}.isEqualTo("value of field 'setIntegerValue' is < 1.0")
+            assertThat("value of field 'setFloatValue' is > 3.5").isIn(ex.violations.get(0).message,ex.violations.get(1).message)
+            assertThat("value of field 'setIntegerValue' is < 1.0").isIn(ex.violations.get(0).message,ex.violations.get(1).message)
         }
     }
 
