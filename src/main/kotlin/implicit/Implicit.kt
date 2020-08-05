@@ -1,10 +1,12 @@
 package implicit
 
+import implicit.annotation.generator.GenericType
 import implicit.conversion.TypeConversion
 import implicit.decorator.*
 import implicit.exception.ImplicitException
 import implicit.exception.ImplicitValidationException
 import implicit.exception.ImplicitViolations
+import implicit.extension.findAnnotation
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.NamingStrategy
 import net.bytebuddy.description.method.MethodDescription
@@ -18,6 +20,10 @@ import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.function.Supplier
+import java.util.stream.Collectors
+import kotlin.reflect.KClass
+import kotlin.streams.toList
+
 
 class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
@@ -95,10 +101,12 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
             val instance: T = instantiate(type, cache)
             val implicitViolations = getType(instance!!).declaredMethods
                     .filter { method -> isSetter(method) }
-                    .fold(ImplicitViolations(listOf())) { acc, entry ->
+                    .fold(ImplicitViolations(listOf())) { acc, method ->
                         try {
-                            val field = getFieldNameFromSetterMethod(entry)
-                            setMapValueInInstance(instance, entry, map[field])
+
+                            val field = getFieldNameFromSetterMethod(method)
+                            val fieldValue = handleGenerics(type, method, map[field])
+                            setMapValueInInstance(instance, method, fieldValue)
                             acc
                         } catch (ex: ImplicitValidationException) {
                             ImplicitViolations(acc.violations.plus(ex))
@@ -121,6 +129,42 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         } else {
             initializeField(instance, method, method.parameterTypes[0])
         }
+    }
+
+    private fun <T> handleGenerics(type: Class<T>, method: Method, value: Any?): Any? {
+        val valuesInACollection = convertToCollection(value)
+        if (valuesInACollection!=null) {
+            val genericType = getGenericType(type, method)
+            if(genericType!=null){
+                if (method.parameterTypes.first().isAssignableFrom(List::class.java)) {
+                    return instantiateGenericNestedObject(valuesInACollection, genericType).toList()
+                }
+                if (method.parameterTypes.first().isAssignableFrom(Set::class.java)) {
+                    return instantiateGenericNestedObject(valuesInACollection, genericType).collect(Collectors.toSet())
+                }
+            }
+        }
+        return value
+    }
+
+    private fun convertToCollection(value: Any?) :  Collection<*>?{
+        if(value!=null){
+            if (value is Collection<*>)
+                return value
+            else if (value is Array<*>)
+                return value.toList()
+        }
+        return null
+    }
+
+    private fun instantiateGenericNestedObject(value : Collection<*>, clazz: KClass<*>)  = value.stream().map { instantiateNestedObject(clazz.java, it as Map<*, *>) }
+
+    private fun <T> getGenericType(type: Class<T>, method: Method): KClass<*>? {
+        return type.declaredMethods
+                .filter { it.name == method.name }
+                .filter { it.isAnnotationPresent(GenericType::class.java) }
+                .map { it.findAnnotation(GenericType::class)!!.value }
+                .firstOrNull()
     }
 
     fun getFieldNameFromSetterMethod(setter: Method): String = setter.name.substring(3).decapitalize()
