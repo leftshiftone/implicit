@@ -56,6 +56,7 @@ Implicit has the following built-in annotations:
 | Max            | Target value must be greater equals the configured value        |
 | NotNull        | Target must not be null                                         |
 | NotBlank       | Target must not be blank                                        |
+| NotEmpty       | Target (string or collection) must not be empty                 |
 | ContentNotNull | Target content (map/collection entries) must not be null        |
 | Between        | Target value must be between the min and max value              |
 | Pattern        | Target value must match the regex pattern                       |
@@ -143,7 +144,37 @@ interface Entity {
 }
 ````
 
+## GenericType
+The @GenericType annotation can be used on methods to let implicit-engine know the type of object that is contained in a collection.
 
+
+````
+interface EntityA {
+    fun getContentList(): List<EntityB>
+    @GenericType(EntityB::class)
+    fun setContentList(content: List<EntityB>)
+}
+
+interface EntityB {
+    fun getPartitionKey(): String
+    fun setPartitionKey(str: String)
+}
+
+````
+**Use case:** Object instantiation from a Map, where there are fields with collections of nested objects 
+e.g.
+
+````
+....
+fun instantiateEntityA(){
+    val factory = Implicit { "${this.javaClass.name.toLowerCase()}.${it.simpleName}" }
+    val function = factory.getFunction(IPojoAlpha::class.java)
+    val instance = function.apply(mapOf(
+            "partitionKey" to "abc",
+            "contentSet" to arrayOf(mapOf("partitionKey" to "ABC"), mapOf("partitionKey" to "DEF"))
+    ))
+}
+````
 ## Development
 
 ### Release
