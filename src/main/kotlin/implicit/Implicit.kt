@@ -122,20 +122,33 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     fun <T> setMapValueInInstance(instance: T, method: Method, fieldValue: Any?) {
         if (fieldValue != null) {
             val clazz = method.parameterTypes[0]
-            if (isNestedImplicitObject(clazz, fieldValue))
-                invoke(instance, method, instantiateNestedObject(clazz, fieldValue as Map<*, *>))
-            else
-                invoke(instance, method, TypeConversion.convert(fieldValue, method.parameterTypes[0]))
+            val convertedFieldValue = when {
+                isNestedImplicitObject(clazz, fieldValue) -> instantiateNestedObject(clazz, fieldValue as Map<*, *>)
+                isNestedMap(clazz, fieldValue) -> convertCollectionsInMaps(fieldValue as Map<*, *>)
+                else -> TypeConversion.convert(fieldValue, method.parameterTypes[0])
+            }
+            invoke(instance, method, convertedFieldValue)
         } else {
             initializeField(instance, method, method.parameterTypes[0])
         }
     }
 
+    private fun convertCollectionsInMaps(map: Map<*, *>): Map<*, *> {
+        return map.mapValues {
+            val valueAsCollection = convertToCollection(it.value)
+            when {
+                valueAsCollection != null -> return@mapValues valueAsCollection
+                it.value is Map<*, *> -> return@mapValues convertCollectionsInMaps(it.value as Map<*, *>)
+                else -> return@mapValues it.value
+            }
+        }
+    }
+
     private fun <T> handleGenerics(type: Class<T>, method: Method, value: Any?): Any? {
         val valuesInACollection = convertToCollection(value)
-        if (valuesInACollection!=null) {
+        if (valuesInACollection != null) {
             val genericType = getGenericType(type, method)
-            if(genericType!=null){
+            if (genericType != null) {
                 if (method.parameterTypes.first().isAssignableFrom(List::class.java)) {
                     return instantiateGenericNestedObject(valuesInACollection, genericType).toList()
                 }
@@ -147,8 +160,8 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         return value
     }
 
-    private fun convertToCollection(value: Any?) :  Collection<*>?{
-        if(value!=null){
+    private fun convertToCollection(value: Any?): Collection<*>? {
+        if (value != null) {
             if (value is Collection<*>)
                 return value
             else if (value is Array<*>)
@@ -157,7 +170,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
         return null
     }
 
-    private fun instantiateGenericNestedObject(value : Collection<*>, clazz: KClass<*>)  = value.stream().map { instantiateNestedObject(clazz.java, it as Map<*, *>) }
+    private fun instantiateGenericNestedObject(value: Collection<*>, clazz: KClass<*>) = value.stream().map { instantiateNestedObject(clazz.java, it as Map<*, *>) }
 
     private fun <T> getGenericType(type: Class<T>, method: Method): KClass<*>? {
         return type.declaredMethods
@@ -169,6 +182,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
 
     fun getFieldNameFromSetterMethod(setter: Method): String = setter.name.substring(3).decapitalize()
     fun isNestedImplicitObject(objClass: Class<*>, fieldValue: Any?): Boolean = objClass.isInterface && objClass != Map::class.java && fieldValue is Map<*, *>
+    fun isNestedMap(objClass: Class<*>, fieldValue: Any?): Boolean = objClass == Map::class.java && fieldValue is Map<*, *>
     fun isSetter(method: Method): Boolean = method.name.startsWith("set")
     fun isGetter(method: Method): Boolean = method.name.startsWith("get") || method.name.startsWith("is")
     fun <T> instantiateNestedObject(clazz: Class<T>, map: Map<*, *>) = instantiate(clazz, map)
