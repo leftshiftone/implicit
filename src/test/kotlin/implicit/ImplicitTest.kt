@@ -18,6 +18,7 @@ package implicit;
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.*
 
@@ -61,6 +62,19 @@ class ImplicitTest {
 
         assertNotNull(pojo.getLabelList())
         assertNotNull(pojo.getLabelSet())
+    }
+
+    @Test
+    fun `map initialization with array as value of map`() {
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
+        val function = factory.getFunction(IPojo::class.java)
+
+        val pojo = function.apply(mapOf("utterances" to mapOf("de" to arrayOf("hello", "world"))))
+
+        assertNotNull(pojo.getUtterances())
+        assertNotNull(pojo.getUtterances()["de"])
+        assert(pojo.getUtterances()["de"] is List)
+        assertTrue(pojo.getUtterances()["de"] == listOf("hello", "world"))
     }
 
     @Test
@@ -111,5 +125,9 @@ class ImplicitTest {
 
         fun getLabelSet(): Set<String?>
         fun setLabelSet(labelList: Set<String?>)
+
+        fun getUtterances(): Map<String?, List<String?>>
+        fun setUtterances(utterances : Map<String?, List<String?>>)
+
     }
 }
