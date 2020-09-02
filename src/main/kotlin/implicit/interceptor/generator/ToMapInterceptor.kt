@@ -18,10 +18,12 @@ object ToMapInterceptor {
     fun intercept(@This obj: Any): Any? {
         var map = objectMapper.convertValue(obj, Map::class.java)
 
+        // FIXME remove workaround for dates
         if(map.containsKey("updateTime") && map["updateTime"] != null) {
             map = map.plus(Pair("updateTime", OffsetDateTime.parse(map["updateTime"] as String)))
         }
 
+        // FIXME remove workaround for dates
         if(map.containsKey("createTime") && map["createTime"] != null) {
             map = map.plus(Pair("createTime", OffsetDateTime.parse(map["createTime"] as String)))
         }
