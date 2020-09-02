@@ -46,6 +46,7 @@ dependencies {
     testCompile "org.assertj:assertj-core:3.11.1"
     testRuntime "org.slf4j:slf4j-simple:1.7.26"
     testCompile "com.fasterxml.jackson.core:jackson-databind:2.10.4"
+    testCompile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.4"
 }
 asteriaEmail {
     smtpHost = System.getenv("ASTERIA_EMAIL_SMTP_HOST")
