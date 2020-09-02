@@ -10,6 +10,7 @@ object TypeConversion {
 
         return when (from) {
             is Number -> NumberConverter.convert(from, to) as O?
+            is String -> StringConverter.convert(from, to) as O?
             else -> from as O // do not convert and pray for the best
         }
     }

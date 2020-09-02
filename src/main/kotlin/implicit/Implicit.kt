@@ -216,7 +216,7 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
                 else -> throw ImplicitException("Failed to invoke ${setter.name} with value $value", ex)
             }
         } catch (ex: Exception) {
-            throw ImplicitException("Failed to invoke ${setter.name} with value $value", ex)
+            throw ImplicitException("Failed to invoke ${setter.name} with value $value ${value!!::class.java}", ex)
         }
     }
 
