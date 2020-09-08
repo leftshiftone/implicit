@@ -83,16 +83,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
@@ -139,16 +148,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         }
@@ -157,16 +175,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         }
@@ -502,16 +529,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
@@ -599,16 +635,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
@@ -713,16 +758,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
@@ -810,16 +864,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
@@ -907,16 +970,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
@@ -1031,16 +1103,25 @@
         "com.fasterxml.jackson.core:jackson-annotations": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-core": {
             "locked": "2.10.4",
             "transitive": [
-                "com.fasterxml.jackson.core:jackson-databind"
+                "com.fasterxml.jackson.core:jackson-databind",
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.10.4",
+            "requested": "2.10.4",
+            "transitive": [
+                "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+            ]
+        },
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
             "requested": "2.10.4"
         },
