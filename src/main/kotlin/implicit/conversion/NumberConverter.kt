@@ -11,6 +11,7 @@ object NumberConverter {
             java.lang.Long::class.java -> from.toLong()
             Number::class.java,
             java.lang.Number::class.java -> from
+            Object::class.java -> from
             else -> throw IllegalArgumentException("Can not convert ${from::class.java.simpleName} to ${to.simpleName}")
         }
     }
