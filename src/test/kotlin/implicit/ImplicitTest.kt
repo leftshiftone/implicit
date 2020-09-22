@@ -14,13 +14,15 @@
  * from Leftshift One.
  */
 
-package implicit;
+package implicit
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class ImplicitTest {
 
@@ -37,7 +39,32 @@ class ImplicitTest {
 
         assertNotNull(pojo.getPartitionKey())
         assertNotNull(pojo.getSortingKey())
-        Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
+        assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
+    }
+
+    @Test
+    fun parallelTest() {
+        var creationOfPojoSuccessfull=true
+        val barrier = CountDownLatch(1)
+        val endBarrier = CountDownLatch(25)
+        val factory = Implicit { "implicit.test.implicit.${it.simpleName}" }
+        (0..24).forEach {
+            Thread {
+                try {
+                    barrier.await(10, TimeUnit.SECONDS)
+                    println("[${Thread.currentThread().name}] starting execution")
+                    factory.create(IPojo::class.java)
+                }catch (ex: Exception){
+                    println("[${Thread.currentThread().name}] Error occurred when creating the pojo " + ex.message)
+                    creationOfPojoSuccessfull=false
+                } finally {
+                    endBarrier.countDown()
+                }
+            }.start()
+        }
+        barrier.countDown()
+        endBarrier.await(60, TimeUnit.SECONDS)
+        assertThat(creationOfPojoSuccessfull).isTrue()
     }
 
     @Test
@@ -50,7 +77,7 @@ class ImplicitTest {
 
         assertNotNull(pojo.getPartitionKey())
         assertNotNull(pojo.getSortingKey())
-        Assertions.assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
+        assertTrue(pojo::class.java.annotations.map { it.annotationClass.simpleName }.contains("Entity"))
     }
 
     @Test
@@ -118,7 +145,7 @@ class ImplicitTest {
         fun setPartitionKey(str: String)
 
         fun getSortingKey(): String
-        fun setSortingKey(str: String): Unit
+        fun setSortingKey(str: String)
 
         fun getLabelList(): List<String?>
         fun setLabelList(labelList: List<String?>)
