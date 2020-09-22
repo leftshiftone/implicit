@@ -18,6 +18,7 @@ import net.bytebuddy.matcher.ElementMatchers.isDeclaredBy
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Function
 import java.util.function.Supplier
 import java.util.stream.Collectors
@@ -30,6 +31,8 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     companion object {
         private val intfTypeRegistry = ConcurrentHashMap<String, String>()
         private val supplierRegistry = ConcurrentHashMap<String, Supplier<*>>()
+        private val intfTypeRegistryLock = ReentrantLock()
+
     }
 
     @JvmOverloads
@@ -37,30 +40,31 @@ class Implicit(val namingStrategy: (TypeDescription) -> CharSequence) {
     fun <T> create(intf: Class<T>, interceptor: ImplicitInterceptor = ImplicitInterceptor()): Class<out T> {
         if (!intf.isInterface)
             throw IllegalArgumentException("argument must be an interface")
+        try {
+            intfTypeRegistryLock.lock()
+            if (intfTypeRegistry.containsKey(intf.name))
+                return Class.forName(intfTypeRegistry.get(intf.name)) as Class<out T>
 
-        if (intfTypeRegistry.containsKey(intf.name))
-            return Class.forName(intfTypeRegistry.get(intf.name)) as Class<out T>
+            val addField = AddFieldDecorator<T>(intf)::apply
+            val addGetterSetter = AddGetterSetterDecorator<T>(intf)::apply
+            val addConstructor = AddConstructorDecorator<T>(intf, interceptor)::apply
+            val addAlias = AliasDecorator<T>(intf)::apply
+            val addMixin = MixinDecorator<T>(intf)::apply
+            val addEqualsHashCode = AddEqualsHashCodeDecorator<T>(intf)::apply
+            val addToString = AddToStringDecorator<T>(intf)::apply
+            val toMap = ToMapDecorator<T>(intf)::apply
 
-        val addField = AddFieldDecorator<T>(intf)::apply
-        val addGetterSetter = AddGetterSetterDecorator<T>(intf)::apply
-        val addConstructor = AddConstructorDecorator<T>(intf, interceptor)::apply
-        val addAlias = AliasDecorator<T>(intf)::apply
-        val addMixin = MixinDecorator<T>(intf)::apply
-        val addEqualsHashCode = AddEqualsHashCodeDecorator<T>(intf)::apply
-        val addToString = AddToStringDecorator<T>(intf)::apply
-        val toMap = ToMapDecorator<T>(intf)::apply
-
-        val unloaded = toMap(addToString(addEqualsHashCode(
-                addMixin(addAlias(addGetterSetter(addField(addConstructor(init(intf))))))))).make()
-        interceptor.onLoading(unloaded)
-
-        val loaded = unloaded.load(Implicit::class.java.classLoader, INJECTION)
-        interceptor.onLoaded(loaded)
-
-        val loadedType = loaded.loaded
-        intfTypeRegistry.put(intf.name, loadedType.name)
-
-        return loadedType
+            val unloaded = toMap(addToString(addEqualsHashCode(
+                    addMixin(addAlias(addGetterSetter(addField(addConstructor(init(intf))))))))).make()
+            interceptor.onLoading(unloaded)
+            val loaded = unloaded.load(Implicit::class.java.classLoader, INJECTION)
+            interceptor.onLoaded(loaded)
+            val loadedType = loaded.loaded
+            intfTypeRegistry.put(intf.name, loadedType.name)
+            return loadedType
+        } finally {
+            intfTypeRegistryLock.unlock()
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
