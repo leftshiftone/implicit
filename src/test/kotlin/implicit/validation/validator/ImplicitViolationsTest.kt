@@ -43,7 +43,7 @@ class ImplicitViolationsTest {
             when (ex) {
                 is ImplicitViolations -> {
                     assertThat(ex.violations).hasSize(1)
-                    assertThat(ex.message).isEqualTo("Implicit validations were detected: [value of field 'setNotBlankName' is empty]")
+                    assertThat(ex.message).isEqualTo("Implicit violations were detected: [value of field 'setNotBlankName' is empty]")
                 }
                 else -> Assertions.fail("Implicit violation is expected")
             }
