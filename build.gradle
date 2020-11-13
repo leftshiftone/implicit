@@ -48,6 +48,15 @@ dependencies {
     testCompile "com.fasterxml.jackson.core:jackson-databind:2.10.4"
     testCompile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.4"
 }
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == "org.jetbrains.kotlin") {
+            details.useVersion versionKotlin
+        }
+    }
+}
+
 asteriaEmail {
     smtpHost = System.getenv("ASTERIA_EMAIL_SMTP_HOST")
     smptUser = System.getenv("ASTERIA_EMAIL_SMTP_USER")
