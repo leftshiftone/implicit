@@ -1,6 +1,6 @@
 [![CircleCI branch](https://img.shields.io/circleci/project/github/leftshiftone/implicit/master.svg?style=flat-square)](https://circleci.com/gh/leftshiftone/implicit)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/leftshiftone/implicit.svg?style=flat-square)](https://github.com/leftshiftone/implicit/tags)
-[![Bintray](https://img.shields.io/badge/dynamic/json.svg?label=bintray&query=name&style=flat-square&url=https%3A%2F%2Fapi.bintray.com%2Fpackages%2Fleftshiftone%2Fimplicit%2Fone.leftshift.implicit.implicit%2Fversions%2F_latest)](https://bintray.com/leftshiftone/implicit/one.leftshift.implicit.implicit/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/one.leftshift.implicit/implicit?style=flat-square)](https://mvnrepository.com/artifact/one.leftshift.implicit/implicit)
 
 
 # Implicit
