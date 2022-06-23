@@ -96,14 +96,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
@@ -161,14 +161,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         }
     },
     "compileOnlyDependenciesMetadata": {
@@ -188,14 +188,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         }
     },
     "default": {
@@ -280,7 +280,8 @@
     },
     "jacocoAgent": {
         "org.jacoco:org.jacoco.agent": {
-            "locked": "0.8.5"
+            "locked": "0.8.5",
+            "requested": "0.8.5"
         }
     },
     "jacocoAnt": {
@@ -596,14 +597,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
@@ -702,14 +703,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
@@ -825,14 +826,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
@@ -931,14 +932,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
@@ -1037,14 +1038,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
@@ -1170,14 +1171,14 @@
         },
         "com.fasterxml.jackson.core:jackson-databind": {
             "locked": "2.10.4",
-            "requested": "2.10.4",
+            "requested": "2.13.3",
             "transitive": [
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
             ]
         },
         "com.fasterxml.jackson.datatype:jackson-datatype-jsr310": {
             "locked": "2.10.4",
-            "requested": "2.10.4"
+            "requested": "2.13.3"
         },
         "net.bytebuddy:byte-buddy": {
             "locked": "1.9.12",
