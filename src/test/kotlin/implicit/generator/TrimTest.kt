@@ -11,7 +11,7 @@ class TrimTest {
 
     @Test
     fun `Set a value with empty spaces in front and after the string`() {
-        val factory = Implicit { "implicit.generator.default_.${it.simpleName}" }
+        val factory = Implicit { "implicit.generator.trim_.${it.simpleName}" }
         val supplier = factory.getSupplier(Entity::class.java, true)
 
         val pojo = supplier.get()
@@ -25,7 +25,7 @@ class TrimTest {
 
     @Test
     fun `Test String fields with and without Trim annotations`() {
-        val factory = Implicit { "implicit.generator.default_.${it.simpleName}" }
+        val factory = Implicit { "implicit.generator.trim_.${it.simpleName}" }
         val supplier = factory.getSupplier(Entity2::class.java)
 
         val pojo = supplier.get()
