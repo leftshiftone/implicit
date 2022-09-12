@@ -3,7 +3,9 @@ package implicit.decorator
 import implicit.annotation.Explicit
 import implicit.annotation.Implicit
 import implicit.annotation.generator.Default
+import implicit.annotation.generator.Trim
 import implicit.interceptor.generator.DefaultInterceptor
+import implicit.interceptor.generator.TrimInterceptor
 import implicit.interceptor.generator.ValidationInterceptor
 import net.bytebuddy.description.ByteCodeElement
 import net.bytebuddy.description.method.MethodDescription
@@ -46,23 +48,36 @@ class AddGetterSetterDecorator<T>(private val intf: Class<*>) : Function<Dynamic
         }
 
         return builder
-                .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
-                        .and(not<MethodDescription>(isDefaultMethod<MethodDescription>()))
-                        .and(not<MethodDescription>(isAnnotatedWith(Explicit::class.java)))
-                        .and(not<MethodDescription>(isAnnotatedWith(Default::class.java)))
-                        .and(nameMatcher))
-                .intercept(FieldAccessor.ofBeanProperty())
-                .method(isDeclaredBy<ByteCodeElement>(typeMatcher)
-                        .and(annotationMatcher)
-                        .and(not<MethodDescription>(isAnnotatedWith(Default::class.java)))
-                        .and(nameMatcher))
-                .intercept(MethodDelegation.to(ValidationInterceptor)
-                        .andThen(FieldAccessor.ofBeanProperty()))
-                .method(                        isDeclaredBy<ByteCodeElement>(typeMatcher)
-                        .and(nameMatcher)
-                        .and(isAnnotatedWith(Default::class.java))
-                )
-                .intercept(MethodDelegation.to(DefaultInterceptor))
+            .method(
+                isDeclaredBy<ByteCodeElement>(typeMatcher)
+                    .and(not<MethodDescription>(isDefaultMethod<MethodDescription>()))
+                    .and(not<MethodDescription>(isAnnotatedWith(Explicit::class.java)))
+                    .and(not<MethodDescription>(isAnnotatedWith(Default::class.java)))
+                    .and(nameMatcher)
+            )
+            .intercept(FieldAccessor.ofBeanProperty())
+            .method(
+                isDeclaredBy<ByteCodeElement>(typeMatcher)
+                    .and(annotationMatcher)
+                    .and(not<MethodDescription>(isAnnotatedWith(Default::class.java)))
+                    .and(nameMatcher)
+            )
+            .intercept(
+                MethodDelegation.to(ValidationInterceptor)
+                    .andThen(FieldAccessor.ofBeanProperty())
+            )
+            .method(
+                isDeclaredBy<ByteCodeElement>(typeMatcher)
+                    .and(nameMatcher)
+                    .and(isAnnotatedWith(Default::class.java))
+            )
+            .intercept(MethodDelegation.to(DefaultInterceptor))
+            .method(
+                isDeclaredBy<ByteCodeElement>(typeMatcher)
+                    .and(nameMatcher)
+                    .and(isAnnotatedWith(Trim::class.java))
+            )
+            .intercept(MethodDelegation.to(TrimInterceptor))
     }
 
 }

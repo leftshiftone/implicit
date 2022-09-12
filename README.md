@@ -175,15 +175,31 @@ fun instantiateEntityA(){
     ))
 }
 ````
+
+## Trim
+
+The @Trim annotation can be used on methods that return a String value and is used to trim the content of the field
+
+````
+interface EntityA {
+   @Trim
+   fun getStringVal():String?
+}
+
+````
+
 ## Development
 
 ### Release
+
 Releases are triggered locally. Just a tag will be pushed and CI pipelines take care of the rest.
 
 #### Major
+
 Run `./gradlew final -x sendReleaseEmail -Prelease.scope=major` locally.
 
 #### Minor
+
 Run `./gradlew final -x sendReleaseEmail -Prelease.scope=minor` locally.
 
 #### Patch
